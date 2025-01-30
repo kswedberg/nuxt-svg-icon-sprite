@@ -21,7 +21,7 @@ export function falsy<T>(value: T): value is NonNullable<T> {
   return value !== null && value !== undefined
 }
 
-export const logger = useLogger('nuxt-svg-icon-sprite')
+export const logger = useLogger('nuxt-svg-symbol-sprite')
 
 export function extractSymbol(source = ''): Symbol {
   const [, parsedAttributes, content] =

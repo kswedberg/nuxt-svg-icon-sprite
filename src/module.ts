@@ -17,7 +17,7 @@ import {
 } from './utils'
 
 /**
- * Options for the nuxt-svg-icon-sprite module.
+ * Options for the nuxt-svg-symbol-sprite module.
  */
 export type ModuleOptions = {
   /**
@@ -35,7 +35,7 @@ export type ModuleOptions = {
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: 'nuxt-svg-icon-sprite',
+    name: 'nuxt-svg-symbol-sprite',
     configKey: 'svgIconSprite',
     compatibility: {
       nuxt: '^3.9.0',

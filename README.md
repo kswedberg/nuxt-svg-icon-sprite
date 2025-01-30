@@ -1,4 +1,6 @@
-# Nuxt SVG Icon Sprite
+# Nuxt SVG Symbol Sprite
+
+**_This is a fork of the `nuxt-svg-icon-sprite` module_**
 
 Easy and performant way to use SVG icons in your Nuxt 3 app.
 
@@ -16,12 +18,12 @@ provides components and composables to use symbols.
 ## Install
 
 ```bash
-npm install --save nuxt-svg-icon-sprite
+npm install --save nuxt-svg-symbol-sprite
 ```
 
 ```typescript
 export default defineNuxtConfig({
-  modules: ['nuxt-svg-icon-sprite'],
+  modules: ['nuxt-svg-symbol-sprite'],
 
   svgIconSprite: {
     sprites: {
@@ -74,7 +76,7 @@ config object:
 
 ```typescript
 export default defineNuxtConfig({
-  modules: ['nuxt-svg-icon-sprite'],
+  modules: ['nuxt-svg-symbol-sprite'],
 
   svgIconSprite: {
     sprites: {
@@ -140,7 +142,7 @@ const { symbols } = useSpriteData()
 import { optimize } from 'svgo'
 
 export default defineNuxtConfig({
-  modules: ['nuxt-svg-icon-sprite'],
+  modules: ['nuxt-svg-symbol-sprite'],
 
   svgIconSprite: {
     sprites: {
