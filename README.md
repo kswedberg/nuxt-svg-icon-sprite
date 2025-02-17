@@ -1,29 +1,27 @@
-# Nuxt SVG Symbol Sprite
-
-**_This is a fork of the `nuxt-svg-icon-sprite` module_**
+# Nuxt SVG Icon Sprite
 
 Easy and performant way to use SVG icons in your Nuxt 3 app.
 
-Automatically creates [SVG `<symbol>`
-sprites](https://www.sitepoint.com/use-svg-image-sprites/) during build and
-provides components and composables to use symbols.
+Automatically creates
+[SVG `<symbol>` sprites](https://www.sitepoint.com/use-svg-image-sprites/)
+during build and provides components and composables to use symbols.
 
 - Aggregate all SVG files into a one or more sprite files
 - Reduce bundle size and SSR rendered page size
 - Full HMR support
 - Provides `<SpriteSymbol>` component to render `<svg>` with `<use>`
-- Loads the sprite.svg from URL (/_nuxt/sprite.svg)
+- Loads the sprite.svg from URL (/\_nuxt/sprite.svg)
 - Typescript type checking for available symbols
 
 ## Install
 
 ```bash
-npm install --save nuxt-svg-symbol-sprite
+npm install --save nuxt-svg-icon-sprite
 ```
 
 ```typescript
 export default defineNuxtConfig({
-  modules: ['nuxt-svg-symbol-sprite'],
+  modules: ['nuxt-svg-icon-sprite'],
 
   svgIconSprite: {
     sprites: {
@@ -67,16 +65,16 @@ The symbol is referenced from the sprite via URL.
 If you have a lot of icons it might make sense to split them into separate
 sprites.
 
-A typical example would be to have SVGs that appear on every page (navbar,
-logo, footer, etc.) in the "default" sprite and put page-specific SVGs in
-separate sprites.
+A typical example would be to have SVGs that appear on every page (navbar, logo,
+footer, etc.) in the "default" sprite and put page-specific SVGs in separate
+sprites.
 
 To create an additional sprite just define a new property on the `sprites`
 config object:
 
 ```typescript
 export default defineNuxtConfig({
-  modules: ['nuxt-svg-symbol-sprite'],
+  modules: ['nuxt-svg-icon-sprite'],
 
   svgIconSprite: {
     sprites: {
@@ -103,8 +101,8 @@ The symbol name is prefixed by the name of the sprite (e.g. the key used in the
 
 ## `<SpriteSymbol>` component
 
-In addition to the `name` prop you can also optionally pass the `noWrapper`
-prop to only render the `<use>` tag:
+In addition to the `name` prop you can also optionally pass the `noWrapper` prop
+to only render the `<use>` tag:
 
 ```vue
 <SpriteSymbol name="dashboard/billing" :no-wrapper="true" />
@@ -118,7 +116,8 @@ This will render the following markup:
 
 This is useful if you want to render multiple symbols in one `<svg>` tag.
 
-You may also use the `inline` prop on the `<SpriteSymbol />` component to render the SVG content directly instead of rendering the `<use>` tag.
+You may also use the `inline` prop on the `<SpriteSymbol />` component to render
+the SVG content directly instead of rendering the `<use>` tag.
 
 ## `useSpriteData()` composable
 
@@ -139,10 +138,10 @@ const { symbols } = useSpriteData()
 ## Full Module Options
 
 ```typescript
-import { optimize } from 'svgo'
+import type { HTMLElement } from 'node-html-parser'
 
 export default defineNuxtConfig({
-  modules: ['nuxt-svg-symbol-sprite'],
+  modules: ['nuxt-svg-icon-sprite'],
 
   svgIconSprite: {
     sprites: {
@@ -153,25 +152,29 @@ export default defineNuxtConfig({
         // These are added after the auto imports defined in the
         // `importPatterns`.
         symbolFiles: {
-          email: '~/node_modules/some_package/assets/icons/email.svg'
+          email: '~/node_modules/some_package/assets/icons/email.svg',
         },
 
-        processSvg(markup: string, filePath: string) {
-          // Executed for each loaded <svg> file.
-          // Do something with the markup, e.g. execute SVGO or do some string
-          // replacements.
-          return optimize(markup).data
-        },
-        processSymbol(symbol, filePath) {
-          // Add attributes to the parsed symbol.
-          symbol.attributes.width = '24'
-          symbol.attributes.height = '24'
-          symbol.attributes.viewBox = '0 0 24 24'
+        processSpriteSymbol(svg: HTMLElement) {
+          // Executed for each sprite symbol.
 
-          // Afterwards the parsed symbol is converted to markup.
-          return symbol
+          // Remove width and height attribute from the SVG.
+          svg.removeAttribute('width')
+          svg.removeAttribute('height')
+
+          // Use 'currentColor' for all fills and strokes.
+          const elements = svg.querySelectorAll('*')
+          const attributes = ['stroke', 'fill']
+          elements.forEach((el) => {
+            attributes.forEach((name) => {
+              const value = el.getAttribute(name)
+              if (value) {
+                el.setAttribute(name, 'currentColor')
+              }
+            })
+          })
         },
-        processSprite(markup, name) {
+        processSprite(sprite: HTMLElement, name) {
           // Executed for each sprite right before its saved.
           // Run SVGO or whatever you like.
           // Markup contains:
@@ -180,7 +183,7 @@ export default defineNuxtConfig({
           //   <symbol id="foobar">...</symbol>
           // </svg>
           return markup
-        }
+        },
       },
     },
   },
