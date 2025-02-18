@@ -1,4 +1,6 @@
-# Nuxt SVG Icon Sprite
+# Nuxt SVG Symbol Sprite
+
+**_This is a TEMPORARY fork of the `nuxt-svg-icon-sprite` module_**
 
 Easy and performant way to use SVG icons in your Nuxt 3 app.
 
@@ -6,7 +8,7 @@ Automatically creates
 [SVG `<symbol>` sprites](https://www.sitepoint.com/use-svg-image-sprites/)
 during build and provides components and composables to use symbols.
 
-- Aggregate all SVG files into a one or more sprite files
+- Aggregate all SVG files into one or more sprite files
 - Reduce bundle size and SSR rendered page size
 - Full HMR support
 - Provides `<SpriteSymbol>` component to render `<svg>` with `<use>`
@@ -16,12 +18,12 @@ during build and provides components and composables to use symbols.
 ## Install
 
 ```bash
-npm install --save nuxt-svg-icon-sprite
+npm install --save nuxt-svg-symbol-sprite
 ```
 
 ```typescript
 export default defineNuxtConfig({
-  modules: ['nuxt-svg-icon-sprite'],
+  modules: ['nuxt-svg-symbol-sprite'],
 
   svgIconSprite: {
     sprites: {
@@ -35,11 +37,10 @@ export default defineNuxtConfig({
 
 ## Usage
 
-Place the icons in the folder defined in nuxt.config.ts, by default it's
-`./assets/icons`. The name of the SVG files is used to determine the symbol
-name.
+Place the icons in the folder defined in nuxt.config.ts. By default it's
+`./assets/icons`. The name of the SVG files is used to determine the symbol name.
 
-**NOTE: Per sprite each symbol must have an unique name!**
+**NOTE: Per sprite each symbol must have a unique name!**
 
 So, if you have a file in `./assets/icons/user.svg` the sprite will contain a
 `<symbol>` with id `user`.
@@ -62,19 +63,19 @@ The symbol is referenced from the sprite via URL.
 
 ## Multiple Sprites
 
-If you have a lot of icons it might make sense to split them into separate
+If you have a lot of icons, it might make sense to split them into separate
 sprites.
 
 A typical example would be to have SVGs that appear on every page (navbar, logo,
 footer, etc.) in the "default" sprite and put page-specific SVGs in separate
 sprites.
 
-To create an additional sprite just define a new property on the `sprites`
+To create an additional sprite, just define a new property on the `sprites`
 config object:
 
 ```typescript
 export default defineNuxtConfig({
-  modules: ['nuxt-svg-icon-sprite'],
+  modules: ['nuxt-svg-symbol-sprite'],
 
   svgIconSprite: {
     sprites: {
@@ -141,7 +142,7 @@ const { symbols } = useSpriteData()
 import type { HTMLElement } from 'node-html-parser'
 
 export default defineNuxtConfig({
-  modules: ['nuxt-svg-icon-sprite'],
+  modules: ['nuxt-svg-symbol-sprite'],
 
   svgIconSprite: {
     sprites: {
