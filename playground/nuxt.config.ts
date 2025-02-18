@@ -10,7 +10,9 @@ export default defineNuxtConfig({
   imports: {
     autoImport: false,
   },
-
+  devServer: {
+    port: 3099,
+  },
   routeRules: {
     '/spa/**': { ssr: false },
   },
