@@ -98,8 +98,8 @@ export default defineNuxtModule<ModuleOptions>({
       // During development the sprite is served by a server handler.
       addDevServerHandler({
         handler: createDevServerHandler(collector),
-        route: `${buildAssetsDir}nuxt-svg-sprite`,
-      })
+        route: '/_nuxt-svg-sprite',
+      });
     } else {
       // For the build the sprite is generated as a dist file.
       for (const sprite of collector.sprites) {
