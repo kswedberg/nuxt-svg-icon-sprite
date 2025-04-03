@@ -81,11 +81,14 @@ export default defineComponent({
   setup(props) {
     if (import.meta.server && !props.inline) {
       const [sprite, name] = (props.name || '').split('/')
-      const href = SPRITE_PATHS[name ? sprite : 'default']
+      const key = name ? sprite : 'default';
+      const href = SPRITE_PATHS[key];
+
       if (href) {
         useHead({
           link: [
             {
+              key,
               rel: 'prefetch',
               href,
               as: 'image',
