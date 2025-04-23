@@ -4,13 +4,13 @@ import {
   addTemplate,
   addComponent,
   addImportsDir,
-  addDevServerHandler,
   addTypeTemplate,
+  addServerTemplate,
 } from '@nuxt/kit'
-import { createDevServerHandler } from './module/devServerHandler'
+import { createDevServerHandler } from './build/devServerHandler'
 import { joinURL, withLeadingSlash, withTrailingSlash } from 'ufo'
-import type { SpriteConfig, RuntimeOptions } from './types'
-import { Collector } from './module/Collector'
+import type { SpriteConfig, RuntimeOptions } from './build/types'
+import { Collector } from './build/Collector'
 
 /**
  * Options for the nuxt-svg-icon-sprite module.
@@ -96,9 +96,9 @@ export default defineNuxtModule<ModuleOptions>({
 
     if (DEV) {
       // During development the sprite is served by a server handler.
-      addDevServerHandler({
+      nuxt.options.devServerHandlers.push({
         handler: createDevServerHandler(collector),
-        route: `${buildAssetsDir}nuxt-svg-sprite`,
+        route: `/__nuxt/nuxt-svg-sprite`,
       })
     } else {
       // For the build the sprite is generated as a dist file.
@@ -125,7 +125,7 @@ export default defineNuxtModule<ModuleOptions>({
               'nuxt-svg-sprite/symbols/' +
               sprite.getPrefix() +
               processed.symbol.id +
-              '.mjs',
+              '.js',
             write: true,
             getContents: () => {
               const symbol = {
@@ -142,7 +142,7 @@ export default defineNuxtModule<ModuleOptions>({
     // Template containing the types and the relative URL path to the generated
     // sprite.
     nuxt.options.alias['#nuxt-svg-sprite/runtime'] = addTemplate({
-      filename: 'nuxt-svg-sprite/runtime.mjs',
+      filename: 'nuxt-svg-sprite/runtime.js',
       getContents: () => collector.getRuntimeTemplate(),
     }).dst
 
@@ -154,9 +154,14 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Template containing the raw data (name of symbols, all sprites, symbol DOM, etc.).
     nuxt.options.alias['#nuxt-svg-sprite/data'] = addTemplate({
-      filename: 'nuxt-svg-sprite/data.mjs',
+      filename: 'nuxt-svg-sprite/data.js',
       getContents: () => collector.buildDataTemplate(),
     }).dst
+
+    addServerTemplate({
+      filename: '#nuxt-svg-sprite/data',
+      getContents: () => collector.buildDataTemplate(),
+    })
 
     addTypeTemplate({
       filename: 'nuxt-svg-sprite/data.d.ts',
@@ -166,7 +171,7 @@ export default defineNuxtModule<ModuleOptions>({
 
     // Contains the imports for all symbols.
     nuxt.options.alias['#nuxt-svg-sprite/symbol-import'] = addTemplate({
-      filename: 'nuxt-svg-sprite/symbol-import.mjs',
+      filename: 'nuxt-svg-sprite/symbol-import.js',
       getContents: () => collector.buildSymbolImportTemplate(),
     }).dst
 

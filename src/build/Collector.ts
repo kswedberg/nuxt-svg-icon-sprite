@@ -1,4 +1,4 @@
-import type { ModuleContext, SpriteConfig } from '../types'
+import type { ModuleContext, SpriteConfig } from './types'
 import { Sprite } from './Sprite'
 
 export class Collector {
@@ -26,7 +26,7 @@ export class Collector {
       if (this.context.dev) {
         const { hash } = await sprite.getSprite()
         fileNames[sprite.name] =
-          `${this.context.buildAssetsDir}nuxt-svg-sprite/sprite.${sprite.name}.${hash}.svg`
+          `/__nuxt/nuxt-svg-sprite/sprite.${sprite.name}.${hash}.svg`
       } else {
         fileNames[sprite.name] =
           this.context.buildAssetsDir + (await sprite.getSpriteFileName())
@@ -50,7 +50,7 @@ export const runtimeOptions = ${JSON.stringify(this.context.runtimeOptions)}
       }
     }
 
-    const NuxtSvgSpriteSymbol = types.sort().join('\n    | ') || 'never'
+    const NuxtSvgSpriteSymbol = types.sort().join('\n    | ') || 'string'
 
     return `
 declare module '#nuxt-svg-sprite/runtime' {

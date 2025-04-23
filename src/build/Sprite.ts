@@ -1,8 +1,8 @@
 import { hash } from 'ohash'
 import { HTMLElement } from 'node-html-parser'
 import { resolveFiles, resolvePath } from '@nuxt/kit'
-import { logger } from '../utils'
-import type { ModuleContext, SpriteConfig } from '../types'
+import { logger } from './utils'
+import type { ModuleContext, SpriteConfig } from './types'
 import { SpriteSymbol, type SpriteSymbolProcessed } from './SpriteSymbol'
 
 export class Sprite {

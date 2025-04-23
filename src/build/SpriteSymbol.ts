@@ -1,8 +1,8 @@
 import path from 'node:path'
 import { promises as fs } from 'node:fs'
 import { parse } from 'node-html-parser'
-import type { SpriteConfig } from '../types'
-import { logger } from '../utils'
+import type { SpriteConfig } from './types'
+import { logger } from './utils'
 
 /**
  * A fully processed symbol.
