@@ -102,13 +102,6 @@ declare module '#nuxt-svg-icon-sprite/runtime' {
 
     return `
 export const ALL_SYMBOL_KEYS = ${JSON.stringify(allIcons.sort(), null, 2)}
-
-export const ALL_SYMBOL_DOMS = ${JSON.stringify(
-      Object.fromEntries(allSymbolDoms),
-      null,
-      2,
-    )}
-
 export const ALL_SPRITES = ${JSON.stringify(allSprites, null, 2)}
 `
   }
@@ -118,7 +111,6 @@ export const ALL_SPRITES = ${JSON.stringify(allSprites, null, 2)}
   import type { NuxtSvgSpriteSymbol } from './runtime'
 
   export const ALL_SYMBOL_KEYS: NuxtSvgSpriteSymbol[]
-  export const ALL_SYMBOL_DOMS: Record<NuxtSvgSpriteSymbol, { dom: string, attributes: { [key: string]: string } }>
   export const ALL_SPRITES: Record<string, string>
 }`
   }
