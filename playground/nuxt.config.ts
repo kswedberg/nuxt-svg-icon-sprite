@@ -1,4 +1,5 @@
 import path from 'path'
+import { forceCurrentColor, removeSizes } from './../src/processors'
 
 const importPattern = path.resolve(__dirname, './assets/symbols') + '/**/*.svg'
 
@@ -37,24 +38,26 @@ export default defineNuxtConfig({
         symbolFiles: {
           email: '~/assets/email.svg',
         },
-        processSpriteSymbol: function (svg) {
-          svg.removeAttribute('width')
-          svg.removeAttribute('height')
-
-          const allElements = svg.querySelectorAll('*')
-          const colorAttributes = ['stroke', 'fill']
-          if (svg.hasAttribute('data-keep-color')) {
-            return
-          }
-          allElements.forEach((element) => {
-            colorAttributes.forEach((attribute) => {
-              const value = element.getAttribute(attribute)
-              if (value) {
-                element.setAttribute(attribute, 'currentColor')
+        processSpriteSymbol: [
+          // Removes width and height from SVG.
+          removeSizes,
+          // Replaces stroke and fill attributes with currentColor.
+          forceCurrentColor,
+          // Removes all <title> tags.
+          (svg) => {
+            const titles = svg.querySelectorAll('title')
+            titles.forEach((title) => title.remove())
+          },
+          // Sets a fill on one specific icon.
+          (svg, ctx) => {
+            if (ctx.id === 'alien') {
+              const path = svg.querySelector('path')
+              if (path) {
+                path.setAttribute('fill', 'red')
               }
-            })
-          })
-        },
+            }
+          },
+        ],
       },
       special: {
         importPatterns: ['./assets/symbols-special/**/*.svg'],

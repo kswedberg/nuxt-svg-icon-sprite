@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { promises as fs } from 'node:fs'
 import { parse } from 'node-html-parser'
-import type { SpriteConfig } from './types'
+import type { SpriteConfig, SpriteSymbolProcessor } from './types'
 import { logger } from './utils'
 
 /**
@@ -17,11 +17,19 @@ export class SpriteSymbol {
   filePath: string
   id: string
   processed: Promise<SpriteSymbolProcessed | null> | null = null
+  processors: SpriteSymbolProcessor[]
 
   constructor(filePath: string, config: SpriteConfig) {
     this.id = path.parse(filePath).name
     this.filePath = filePath
     this.config = config
+    if (config.processSpriteSymbol) {
+      this.processors = Array.isArray(config.processSpriteSymbol)
+        ? config.processSpriteSymbol
+        : [config.processSpriteSymbol]
+    } else {
+      this.processors = []
+    }
   }
 
   reset() {
@@ -49,8 +57,8 @@ export class SpriteSymbol {
             throw new Error('Failed to find <svg> in file.')
           }
 
-          if (this.config.processSpriteSymbol) {
-            await this.config.processSpriteSymbol(svg, {
+          for (const processor of this.processors) {
+            await processor(svg, {
               id: this.id,
               filePath: this.filePath,
             })

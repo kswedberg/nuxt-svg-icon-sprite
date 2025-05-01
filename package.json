@@ -12,13 +12,17 @@
     ".": {
       "types": "./dist/types.d.mts",
       "import": "./dist/module.mjs"
-    }
+    },
+    "./processors": "./dist/processors.mjs"
   },
   "main": "./dist/module.mjs",
   "typesVersions": {
     "*": {
       ".": [
         "./dist/types.d.mts"
+      ],
+      "processors": [
+        "./dist/processors.d.mts"
       ]
     }
   },
