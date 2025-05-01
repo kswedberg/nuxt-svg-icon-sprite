@@ -1,6 +1,6 @@
 import { defineEventHandler } from 'h3'
-import { ALL_SPRITES } from '#nuxt-svg-icon-sprite/data'
+import { ALL_SYMBOL_KEYS } from '#nuxt-svg-icon-sprite/data'
 
 export default defineEventHandler(() => {
-  return ALL_SPRITES
+  return ALL_SYMBOL_KEYS
 })
