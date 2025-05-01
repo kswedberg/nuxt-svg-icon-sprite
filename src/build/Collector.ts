@@ -26,7 +26,7 @@ export class Collector {
       if (this.context.dev) {
         const { hash } = await sprite.getSprite()
         fileNames[sprite.name] =
-          `/__nuxt/nuxt-svg-sprite/sprite.${sprite.name}.${hash}.svg`
+          `/__nuxt/nuxt-svg-icon-sprite/sprite.${sprite.name}.${hash}.svg`
       } else {
         fileNames[sprite.name] =
           this.context.buildAssetsDir + (await sprite.getSpriteFileName())
@@ -53,7 +53,7 @@ export const runtimeOptions = ${JSON.stringify(this.context.runtimeOptions)}
     const NuxtSvgSpriteSymbol = types.sort().join('\n    | ') || 'string'
 
     return `
-declare module '#nuxt-svg-sprite/runtime' {
+declare module '#nuxt-svg-icon-sprite/runtime' {
   /**
    * Keys of all generated SVG sprite symbols.
    */
@@ -114,7 +114,7 @@ export const ALL_SPRITES = ${JSON.stringify(allSprites, null, 2)}
   }
 
   buildDataTypeTemplate() {
-    return `declare module '#nuxt-svg-sprite/data' {
+    return `declare module '#nuxt-svg-icon-sprite/data' {
   import type { NuxtSvgSpriteSymbol } from './runtime'
 
   export const ALL_SYMBOL_KEYS: NuxtSvgSpriteSymbol[]
@@ -136,7 +136,7 @@ export const ALL_SPRITES = ${JSON.stringify(allSprites, null, 2)}
           content: v.processed.symbolDom,
           attributes: v.processed.attributes,
         })
-        const importMethodDynamic = `() => import('#build/nuxt-svg-sprite/symbols/${id}').then(v => v.default)`
+        const importMethodDynamic = `() => import('#build/nuxt-svg-icon-sprite/symbols/${id}').then(v => v.default)`
 
         // In dev mode, always use the inlined markup.
         // In build, use dynamic import on client and inline on the server.
@@ -154,7 +154,7 @@ export const ALL_SPRITES = ${JSON.stringify(allSprites, null, 2)}
   }
 
   buildSymbolImportTypeTemplate() {
-    return `declare module '#nuxt-svg-sprite/symbol-import' {
+    return `declare module '#nuxt-svg-icon-sprite/symbol-import' {
   import type { NuxtSvgSpriteSymbol } from './runtime'
 
   type SymbolImport = {

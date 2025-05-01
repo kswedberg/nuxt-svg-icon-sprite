@@ -1,7 +1,7 @@
 import { defineComponent, h } from 'vue'
 import { useHead } from '#imports'
-import type { NuxtSvgSpriteSymbol } from '#nuxt-svg-sprite/runtime'
-import { SPRITE_PATHS, runtimeOptions } from '#nuxt-svg-sprite/runtime'
+import type { NuxtSvgSpriteSymbol } from '#nuxt-svg-icon-sprite/runtime'
+import { SPRITE_PATHS, runtimeOptions } from '#nuxt-svg-icon-sprite/runtime'
 import { getSymbolNameParts } from '../helpers'
 
 type Props = {
