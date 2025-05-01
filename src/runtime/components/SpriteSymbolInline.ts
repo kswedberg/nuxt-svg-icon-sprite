@@ -2,6 +2,7 @@ import { defineComponent, type PropType, h } from 'vue'
 import type { NuxtSvgSpriteSymbol } from '#nuxt-svg-sprite/runtime'
 import { runtimeOptions } from '#nuxt-svg-sprite/runtime'
 import { SYMBOL_IMPORTS } from '#nuxt-svg-sprite/symbol-import'
+import { getSymbolNameParts } from '../helpers'
 
 const SymbolInline = defineComponent({
   props: {
@@ -11,14 +12,14 @@ const SymbolInline = defineComponent({
     },
   },
   async setup(props) {
-    const [sprite, name] = (props.name || '').split('/')
+    const { symbol } = getSymbolNameParts(props.name)
     const symbolImport = SYMBOL_IMPORTS[props.name]
 
     // Invalid symbol name.
     if (!symbolImport) {
       return () =>
         h('svg', {
-          'data-symbol': name || sprite,
+          'data-symbol': symbol,
           xmlns: 'http://www.w3.org/2000/svg',
           innerHTML: '',
           'aria-hidden': runtimeOptions.ariaHidden ? 'true' : undefined,
@@ -27,17 +28,17 @@ const SymbolInline = defineComponent({
 
     // It's either a method that imports it using import() (client side) or
     // the object itself (server side).
-    const symbol =
+    const result =
       typeof symbolImport === 'function' ? await symbolImport() : symbolImport
 
     return () =>
       h('svg', {
-        'data-symbol': name || sprite,
+        'data-symbol': symbol,
         // Pass the attributes from the raw SVG (things like viewBox).
         // Attributes passed to <SpriteSymbol> are automatically added by Vue.
-        ...symbol.attributes,
+        ...result.attributes,
         xmlns: 'http://www.w3.org/2000/svg',
-        innerHTML: symbol.content,
+        innerHTML: result.content,
         id: undefined,
         'aria-hidden': runtimeOptions.ariaHidden ? 'true' : undefined,
       })
@@ -57,7 +58,7 @@ type Props = {
 }
 
 /**
- * Renders a <svg> tag containing <use> that references the given symbol from the sprite.
+ * Inline a sprite symbol.
  */
 export default defineComponent<Props>({
   props: {
@@ -68,6 +69,7 @@ export default defineComponent<Props>({
   },
   setup(props) {
     return () => {
+      // Wrapping makes sure that it's reactive.
       return h(SymbolInline, { name: props.name, key: props.name })
     }
   },

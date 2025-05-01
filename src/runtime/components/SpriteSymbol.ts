@@ -2,6 +2,7 @@ import { defineComponent, h } from 'vue'
 import { useHead } from '#imports'
 import type { NuxtSvgSpriteSymbol } from '#nuxt-svg-sprite/runtime'
 import { SPRITE_PATHS, runtimeOptions } from '#nuxt-svg-sprite/runtime'
+import { getSymbolNameParts } from '../helpers'
 
 type Props = {
   /**
@@ -34,8 +35,8 @@ export default defineComponent<Props>({
   },
   setup(props) {
     if (import.meta.server) {
-      const [sprite, name] = (props.name || '').split('/')
-      const href = SPRITE_PATHS[name ? sprite : 'default']
+      const { sprite } = getSymbolNameParts(props.name)
+      const href = SPRITE_PATHS[sprite]
       if (href) {
         useHead({
           link: [
@@ -52,13 +53,11 @@ export default defineComponent<Props>({
     }
 
     return () => {
-      // Split the name, which is either the symbol name of the default sprite
-      // (e.g. "user") or prefixed to a custom sprite ("dashboard/billing").
-      const [sprite, name] = (props.name || '').split('/')
+      const { symbol, sprite } = getSymbolNameParts(props.name)
 
       // Create the <use> tag.
       const symbolDom = h('use', {
-        href: SPRITE_PATHS[name ? sprite : 'default'] + '#' + (name || sprite),
+        href: SPRITE_PATHS[sprite] + '#' + symbol,
       })
 
       return props.noWrapper
@@ -67,7 +66,7 @@ export default defineComponent<Props>({
             'svg',
             {
               xmlns: 'http://www.w3.org/2000/svg',
-              'data-symbol': name || sprite,
+              'data-symbol': symbol,
               'aria-hidden': runtimeOptions.ariaHidden ? 'true' : undefined,
             },
             symbolDom,

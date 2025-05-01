@@ -3,7 +3,6 @@ import {
   defineNuxtModule,
   addTemplate,
   addComponent,
-  addImportsDir,
   addTypeTemplate,
   addServerTemplate,
   addDevServerHandler,
