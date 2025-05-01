@@ -187,9 +187,13 @@ export default defineNuxtModule<ModuleOptions>({
       getContents: () => collector.buildSymbolImportTypeTemplate(),
     })
 
-    nuxt.hook('builder:watch', async (event, pathRelative) => {
-      const isSvgFile = !!pathRelative.match(/\.(svg)$/)
-      const path = srcResolver.resolve(pathRelative)
+    nuxt.hook('builder:watch', async (event, providedPath) => {
+      const isSvgFile = !!providedPath.match(/\.(svg)$/)
+
+      // Make sure the path is always absolute.
+      const path = providedPath.startsWith('/')
+        ? providedPath
+        : srcResolver.resolve(providedPath)
 
       if (event === 'add' && isSvgFile) {
         await collector.handleAdd(path)
