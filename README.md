@@ -116,8 +116,15 @@ This will render the following markup:
 
 This is useful if you want to render multiple symbols in one `<svg>` tag.
 
-You may also use the `inline` prop on the `<SpriteSymbol />` component to render
-the SVG content directly instead of rendering the `<use>` tag.
+You may also use the `<SpriteSymbolInline />` component to render the SVG
+content directly instead of rendering the `<use>` tag. Note that this will load
+the entire sprite, not just the symbol to be inlined.
+
+```vue
+<SpriteSymbolInline name="search" />
+```
+
+This will render the contents of the SVG file as-is, without any wrapper.
 
 ## `useSpriteData()` composable
 
@@ -191,10 +198,3 @@ export default defineNuxtConfig({
 ```
 
 The options are the same for each `key` in `sprites`.
-
-## TODO
-
-- Provide more information about generated sprite via composable
-- Provide option to inline sprite in SSR
-- Option to directly provide symbols as markup
-- Tests

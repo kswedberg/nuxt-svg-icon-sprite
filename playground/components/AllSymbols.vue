@@ -22,13 +22,12 @@
     />
 
     <!-- Test inlining. -->
-    <SpriteSymbol
+    <SpriteSymbolInline
       :name="current"
       width="128"
       height="128"
       class="text-green-600"
       fill="currentColor"
-      :inline="true"
     />
 
     {{ current }}

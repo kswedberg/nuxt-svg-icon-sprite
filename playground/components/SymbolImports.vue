@@ -7,7 +7,7 @@
         class="p-4 border"
         @click="current = symbol"
       >
-        <SpriteSymbol :name="symbol" width="128" height="128" inline />
+        <SpriteSymbolInline :name="symbol" width="128" height="128" />
         <figcaption class="text-center font-semibold">{{ symbol }}</figcaption>
       </figure>
     </div>

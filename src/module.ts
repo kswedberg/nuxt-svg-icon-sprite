@@ -72,6 +72,12 @@ export default defineNuxtModule<ModuleOptions>({
       global: true,
     })
 
+    addComponent({
+      filePath: resolver.resolve('./runtime/components/SpriteSymbolInline'),
+      name: 'SpriteSymbolInline',
+      global: true,
+    })
+
     const runtimeOptions: RuntimeOptions = {
       ariaHidden: !!moduleOptions.ariaHidden,
     }
