@@ -20,6 +20,9 @@ export default defineNuxtConfig({
   },
 
   vite: {
+    build: {
+      minify: false,
+    },
     server: {
       watch: {
         usePolling: true,

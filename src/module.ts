@@ -6,6 +6,8 @@ import {
   addImportsDir,
   addTypeTemplate,
   addServerTemplate,
+  addDevServerHandler,
+  addImports,
 } from '@nuxt/kit'
 import { createDevServerHandler } from './build/devServerHandler'
 import { joinURL, withLeadingSlash, withTrailingSlash } from 'ufo'
@@ -63,7 +65,10 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.options.build.transpile.push(resolver.resolve('runtime'))
 
     // Add composables.
-    addImportsDir(resolver.resolve('runtime/composables'))
+    addImports({
+      name: 'useSpriteData',
+      from: resolver.resolve('./runtime/composables/useSpriteData'),
+    })
 
     // Add the component.
     addComponent({
@@ -101,8 +106,8 @@ export default defineNuxtModule<ModuleOptions>({
     await collector.init()
 
     if (DEV) {
-      // During development the sprite is served by a server handler.
-      nuxt.options.devServerHandlers.push({
+      // In dev mode, the sprite is served by this server handler.
+      addDevServerHandler({
         handler: createDevServerHandler(collector),
         route: `/__nuxt/nuxt-svg-sprite`,
       })
