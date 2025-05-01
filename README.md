@@ -142,6 +142,68 @@ const { symbols } = useSpriteData()
 </script>
 ```
 
+## Processing SVG Files
+
+By default the collect SVG symbols are used as-is, including any attributes such
+as `width` or `height`. You can optionally provide processor to alter the parsed
+SVG before it is added to the sprite.
+
+The modules exports a few processor you can use:
+
+```typescript
+import { removeSizes, forceCurrentColor } from 'nuxt-svg-icon-sprite/processors'
+
+export default defineNuxtConfig({
+  modules: ['nuxt-svg-icon-sprite'],
+
+  svgIconSprite: {
+    sprites: {
+      default: {
+        importPatterns: ['./assets/icons/**/*.svg'],
+        processSpriteSymbol: [removeSizes(), forceCurrentColor()],
+      },
+    },
+  },
+})
+```
+
+### removeSizes()
+
+This processor will remove `width` and `height` attributes on the `<svg>` tag.
+
+### forceCurrentColor()
+
+This processor will replace all `fill` and `stroke` attribute values with
+`currentColor`. If you still want to keep some stroke or fill attributes, you
+can add a `data-keep-color` attribute on them - they will then be skipped.
+
+### Custom Processors
+
+You can also provide your own processors:
+
+```typescript
+import { removeSizes, forceCurrentColor } from 'nuxt-svg-icon-sprite/processor'
+
+export default defineNuxtConfig({
+  modules: ['nuxt-svg-icon-sprite'],
+
+  svgIconSprite: {
+    sprites: {
+      default: {
+        importPatterns: ['./assets/icons/**/*.svg'],
+        processSpriteSymbol: [
+          (svg) => {
+            // Removes all <title> tags.
+            const titles = svg.querySelectorAll('title')
+            titles.forEach((title) => title.remove())
+          },
+        ],
+      },
+    },
+  },
+})
+```
+
 ## Full Module Options
 
 ```typescript

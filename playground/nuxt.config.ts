@@ -40,9 +40,9 @@ export default defineNuxtConfig({
         },
         processSpriteSymbol: [
           // Removes width and height from SVG.
-          removeSizes,
+          removeSizes(),
           // Replaces stroke and fill attributes with currentColor.
-          forceCurrentColor,
+          forceCurrentColor(),
           // Removes all <title> tags.
           (svg) => {
             const titles = svg.querySelectorAll('title')
