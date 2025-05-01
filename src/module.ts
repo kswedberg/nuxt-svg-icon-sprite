@@ -103,6 +103,7 @@ export default defineNuxtModule<ModuleOptions>({
       runtimeOptions,
       buildResolver,
     })
+
     await collector.init()
 
     if (DEV) {

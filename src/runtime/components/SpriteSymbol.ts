@@ -44,6 +44,7 @@ export default defineComponent<Props>({
               href,
               as: 'image',
               type: 'image/svg+xml',
+              key: href,
             },
           ],
         })
