@@ -1,15 +1,12 @@
 import {
   addComponent,
   addImports,
-  addPlugin,
-  addServerImports,
   createResolver,
   resolveAlias,
   type Resolver,
 } from '@nuxt/kit'
-import { relative } from 'pathe'
 import { joinURL, withLeadingSlash, withTrailingSlash } from 'ufo'
-import type { Nuxt, ResolvedNuxtTemplate } from 'nuxt/schema'
+import type { Nuxt } from 'nuxt/schema'
 import type { ModuleOptions } from './types'
 import { defu } from 'defu'
 
@@ -18,11 +15,6 @@ type ModuleHelperResolvers = {
    * Resolver for paths relative to the module root.
    */
   module: Resolver
-
-  /**
-   * Resolve relative to the app's server directory.
-   */
-  server: Resolver
 
   /**
    * Resolve relative to the Nuxt src folder.
@@ -43,23 +35,51 @@ type ModuleHelperResolvers = {
 }
 
 type ModuleHelperPaths = {
+  /**
+   * Path of the Nuxt root directory.
+   */
   root: string
-  nuxtConfig: string
-  serverDir: string
+
+  /**
+   * Path of the Nuxt source directory.
+   */
   srcDir: string
+
+  /**
+   * Path of this module's build directory.
+   */
   moduleBuildDir: string
+
+  /**
+   * Path of the public assets of this module.
+   */
   buildAssetsDir: string
 }
 
 export class ModuleHelper {
+  /**
+   * Resolvers.
+   */
   public readonly resolvers: ModuleHelperResolvers
+
+  /**
+   * Paths.
+   */
   public readonly paths: ModuleHelperPaths
 
+  /**
+   * True if we are in dev mode.
+   */
   public readonly isDev: boolean
 
+  /**
+   * The merged and prepared options.
+   */
   public readonly options: ModuleOptions
 
-  private nitroExternals: string[] = []
+  /**
+   * The paths we need to add to tsconfig.
+   */
   private tsPaths: Record<string, string> = {}
 
   constructor(
@@ -125,7 +145,6 @@ export class ModuleHelper {
 
     this.resolvers = {
       module: createResolver(moduleUrl),
-      server: createResolver(nuxt.options.serverDir),
       src: srcResolver,
       app: createResolver(nuxt.options.dir.app),
       root: rootResolver,
@@ -133,8 +152,6 @@ export class ModuleHelper {
 
     this.paths = {
       root: nuxt.options.rootDir,
-      nuxtConfig: this.resolvers.root.resolve('nuxt.config.ts'),
-      serverDir: nuxt.options.serverDir,
       srcDir: nuxt.options.srcDir,
       moduleBuildDir: nuxt.options.buildDir + '/nuxt-svg-icon-sprite',
       buildAssetsDir: withLeadingSlash(
@@ -148,28 +165,6 @@ export class ModuleHelper {
     }
   }
 
-  /**
-   * Transform the path relative to the module's build directory.
-   *
-   * @param path - The absolute path.
-   *
-   * @returns The path relative to the module's build directory.
-   */
-  public toModuleBuildRelative(path: string): string {
-    return relative(this.paths.moduleBuildDir, path)
-  }
-
-  /**
-   * Transform the path relative to the Nuxt build directory.
-   *
-   * @param path - The absolute path.
-   *
-   * @returns The path relative to the module's build directory.
-   */
-  public toBuildRelative(path: string): string {
-    return relative(this.nuxt.options.buildDir, path)
-  }
-
   public addAlias(name: string, path: string) {
     this.nuxt.options.alias[name] = path
 
@@ -179,15 +174,6 @@ export class ModuleHelper {
 
     this.tsPaths[name] = pathFromName
     this.tsPaths[name + '/*'] = pathFromName + '/*'
-
-    // Add the alias as an external so that the nitro server build doesn't fail.
-    this.inlineNitroExternals(name)
-  }
-
-  public inlineNitroExternals(arg: ResolvedNuxtTemplate | string) {
-    const path = typeof arg === 'string' ? arg : arg.dst
-    this.nitroExternals.push(path)
-    this.transpile(path)
   }
 
   public transpile(path: string) {
@@ -195,11 +181,6 @@ export class ModuleHelper {
   }
 
   public applyBuildConfig() {
-    // Workaround for https://github.com/nuxt/nuxt/issues/28995
-    this.nuxt.options.nitro.externals ||= {}
-    this.nuxt.options.nitro.externals.inline ||= []
-    this.nuxt.options.nitro.externals.inline.push(...this.nitroExternals)
-
     // Currently needed due to a bug in Nuxt that does not add aliases for
     // nitro. As this has happened before in the past, let's leave it so that
     // we are guaranteed to have these aliases also for server types.
@@ -219,12 +200,6 @@ export class ModuleHelper {
     }
   }
 
-  public addPlugin(name: string) {
-    addPlugin(this.resolvers.module.resolve('./runtime/plugins/' + name), {
-      append: false,
-    })
-  }
-
   public addComposable(name: string) {
     addImports({
       from: this.resolvers.module.resolve('./runtime/composables/' + name),
@@ -238,14 +213,5 @@ export class ModuleHelper {
       name,
       global: true,
     })
-  }
-
-  public addServerUtil(name: string) {
-    addServerImports([
-      {
-        from: this.resolvers.module.resolve('./runtime/server/utils/' + name),
-        name,
-      },
-    ])
   }
 }
