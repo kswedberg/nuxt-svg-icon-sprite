@@ -23,5 +23,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useSpriteData } from '#imports'
+
 const data = useSpriteData()
 </script>

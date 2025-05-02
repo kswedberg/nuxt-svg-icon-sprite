@@ -23,6 +23,7 @@
 
 <script lang="ts" setup>
 import type { NuxtSvgSpriteSymbol } from '#nuxt-svg-icon-sprite/runtime'
+import { useSpriteData, ref } from '#imports'
 
 const data = useSpriteData()
 

@@ -668,6 +668,6 @@ describe('cssPrefix', () => {
         </g>
       </svg>
       "
-    `) // Let Vitest generate the snapshot
+    `)
   })
 })
