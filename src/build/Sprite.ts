@@ -62,7 +62,7 @@ export class Sprite {
 
   async getSpriteFileName() {
     const { hash } = await this.getSprite()
-    return `nuxt-svg/sprite-${this.name}.${hash}.svg`
+    return `nuxt-svg-icon-sprite/sprite-${this.name}.${hash}.svg`
   }
 
   private getImportPatternFiles(): Promise<string[]> {
