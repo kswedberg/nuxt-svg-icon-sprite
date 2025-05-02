@@ -1,19 +1,18 @@
 import type { NuxtSvgSpriteSymbol } from '#nuxt-svg-icon-sprite/runtime'
-import { spritePaths } from '#nuxt-svg-icon-sprite/runtime'
-import { ALL_SYMBOL_KEYS } from '#nuxt-svg-icon-sprite/data'
+import { spritePaths, allSymbolNames } from '#nuxt-svg-icon-sprite/runtime'
 
 type SpriteData = {
   /**
    * All symbol names.
    */
-  symbols: NuxtSvgSpriteSymbol[]
+  symbols: Readonly<NuxtSvgSpriteSymbol[]>
 
   /**
    * The absolute paths to the generated sprites.
    */
-  spritePaths: Record<string, string>
+  spritePaths: Readonly<Record<string, string>>
 }
 
 export function useSpriteData(): SpriteData {
-  return { symbols: ALL_SYMBOL_KEYS, spritePaths }
+  return { symbols: allSymbolNames, spritePaths }
 }

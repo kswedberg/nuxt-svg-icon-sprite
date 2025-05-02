@@ -21,6 +21,7 @@ export class Collector {
 
   async getRuntimeTemplate() {
     const fileNames: Record<string, string> = {}
+    const allSymbols: string[] = []
 
     for (const sprite of this.sprites) {
       if (this.context.dev) {
@@ -31,27 +32,34 @@ export class Collector {
         fileNames[sprite.name] =
           this.context.buildAssetsDir + (await sprite.getSpriteFileName())
       }
+
+      const prefix = sprite.name === 'default' ? '' : sprite.name + '/'
+      const processed = await sprite.getProcessedSymbols()
+      for (const v of processed) {
+        allSymbols.push(prefix + v.symbol.id)
+      }
     }
 
     return `
-export const spritePaths = ${JSON.stringify(fileNames, null, 2)}
-export const runtimeOptions = ${JSON.stringify(this.context.runtimeOptions)}
 export const isServer = import.meta.server
+export const spritePaths = Object.freeze(${JSON.stringify(fileNames, null, 2)})
+export const runtimeOptions = Object.freeze(${JSON.stringify(this.context.runtimeOptions)})
+export const allSymbolNames = Object.freeze(${JSON.stringify(allSymbols.sort(), null, 2)})
 `
   }
 
   async getRuntimeTypeTemplate() {
-    const types: string[] = []
+    const allSymbols: string[] = []
 
     for (const sprite of this.sprites) {
       const prefix = sprite.name === 'default' ? '' : sprite.name + '/'
       const processed = await sprite.getProcessedSymbols()
       for (const v of processed) {
-        types.push(JSON.stringify(prefix + v.symbol.id))
+        allSymbols.push(JSON.stringify(prefix + v.symbol.id))
       }
     }
 
-    const NuxtSvgSpriteSymbol = types.sort().join('\n    | ') || 'string'
+    const NuxtSvgSpriteSymbol = allSymbols.sort().join('\n    | ') || 'string'
 
     return `
 declare module '#nuxt-svg-icon-sprite/runtime' {
@@ -61,57 +69,32 @@ declare module '#nuxt-svg-icon-sprite/runtime' {
   export type NuxtSvgSpriteSymbol =
     | ${NuxtSvgSpriteSymbol}
 
+  /**
+   * Runtime options of the module.
+   */
   export type RuntimeOptions = {
     ariaHidden: boolean
   }
 
-  export const spritePaths: Record<string, string>;
-  export const runtimeOptions: RuntimeOptions;
+  /**
+   * Alias for import.meta.server (used internally for testing).
+   */
   export const isServer: boolean;
-}`
-  }
 
-  async buildDataTemplate() {
-    const allIcons: string[] = []
-    const allSymbolDoms: [
-      string,
-      { dom: string; attributes: Record<string, string> },
-    ][] = []
+  /**
+   * The absolute path for every sprite.
+   */
+  export const spritePaths: Readonly<Record<string, string>>;
 
-    for (const sprite of this.sprites) {
-      const processedSymbols = await sprite.getProcessedSymbols()
+  /**
+   * Runtime options of the module.
+   */
+  export const runtimeOptions: Readonly<RuntimeOptions>;
 
-      processedSymbols.forEach((v) => {
-        const idWithPrefix = sprite.getPrefix() + v.symbol.id
-        allIcons.push(idWithPrefix)
-
-        allSymbolDoms.push([
-          idWithPrefix,
-          {
-            dom: v.processed.symbolDom,
-            attributes: v.processed.attributes,
-          },
-        ])
-      })
-    }
-
-    const allSprites: Record<string, string> = {}
-
-    for (const sprite of this.sprites) {
-      const { content } = await sprite.getSprite()
-      allSprites[sprite.name] = content
-    }
-
-    return `
-export const ALL_SYMBOL_KEYS = ${JSON.stringify(allIcons.sort(), null, 2)}
-`
-  }
-
-  buildDataTypeTemplate() {
-    return `declare module '#nuxt-svg-icon-sprite/data' {
-  import type { NuxtSvgSpriteSymbol } from './runtime'
-
-  export const ALL_SYMBOL_KEYS: NuxtSvgSpriteSymbol[]
+  /**
+   * An array of all symbol names.
+   */
+  export const allSymbolNames: Readonly<NuxtSvgSpriteSymbol[]>;
 }`
   }
 

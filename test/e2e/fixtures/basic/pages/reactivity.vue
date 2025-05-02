@@ -2,7 +2,7 @@
   <div>
     <div id="buttons">
       <button
-        v-for="symbol in symbols"
+        v-for="symbol in data.symbols"
         :key="'button-' + symbol"
         :data-symbol-button="symbol"
         @click="activeSymbol = symbol"
@@ -27,7 +27,5 @@ import { useSpriteData, ref } from '#imports'
 
 const data = useSpriteData()
 
-const symbols = data.symbols.sort()
-
-const activeSymbol = ref<NuxtSvgSpriteSymbol>(symbols[0])
+const activeSymbol = ref<NuxtSvgSpriteSymbol>(data.symbols[0])
 </script>

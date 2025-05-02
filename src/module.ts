@@ -163,23 +163,6 @@ export default defineNuxtModule<ModuleOptions>({
       getContents: () => collector.getRuntimeTypeTemplate(),
     })
 
-    // Template containing the raw data (name of symbols, all sprites, symbol DOM, etc.).
-    nuxt.options.alias['#nuxt-svg-icon-sprite/data'] = addTemplate({
-      filename: 'nuxt-svg-icon-sprite/data.js',
-      getContents: () => collector.buildDataTemplate(),
-    }).dst
-
-    addServerTemplate({
-      filename: '#nuxt-svg-icon-sprite/data',
-      getContents: () => collector.buildDataTemplate(),
-    })
-
-    addTypeTemplate({
-      filename: 'nuxt-svg-icon-sprite/data.d.ts',
-      write: true,
-      getContents: () => collector.buildDataTypeTemplate(),
-    })
-
     // Contains the imports for all symbols.
     nuxt.options.alias['#nuxt-svg-icon-sprite/symbol-import'] = addTemplate({
       filename: 'nuxt-svg-icon-sprite/symbol-import.js',
