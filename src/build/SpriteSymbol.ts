@@ -23,11 +23,11 @@ function toValidId(input: string): string {
   const MAX_LENGTH = 64
   if (sanitized.length > MAX_LENGTH) {
     sanitized = sanitized.substring(0, MAX_LENGTH)
+  }
 
-    // Make sure we don't end with a hyphen.
-    if (sanitized.endsWith('-')) {
-      sanitized = sanitized.slice(0, -1)
-    }
+  // Make sure we don't end with a hyphen.
+  if (sanitized.endsWith('-')) {
+    sanitized = sanitized.slice(0, -1)
   }
 
   return sanitized
