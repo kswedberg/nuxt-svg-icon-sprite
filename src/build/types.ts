@@ -1,4 +1,3 @@
-import type { Resolver } from '@nuxt/kit'
 import type { HTMLElement } from 'node-html-parser'
 
 export type ProcessorContext = {
@@ -40,10 +39,19 @@ export type RuntimeOptions = {
   ariaHidden: boolean
 }
 
-export type ModuleContext = {
-  dev: boolean
-  srcDir: string
-  buildAssetsDir: string
-  runtimeOptions: RuntimeOptions
-  buildResolver: Resolver
+/**
+ * Options for the nuxt-svg-icon-sprite module.
+ */
+export type ModuleOptions = {
+  /**
+   * Define the config for each sprite to generate.
+   *
+   * If a sprite with name `default` is provided the names won't be prefixed.
+   */
+  sprites: Record<string, SpriteConfig>
+
+  /**
+   * Adds aria-hidden="true" to all rendered SVGs.
+   */
+  ariaHidden?: boolean
 }

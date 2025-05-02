@@ -4,9 +4,9 @@ import { HTMLElement } from 'node-html-parser'
 import * as nuxtKit from '@nuxt/kit'
 import { Sprite } from '~/src/build/Sprite'
 import { promises as fs } from 'node:fs'
-import type { ModuleContext } from '~/src/build/types'
 import type { SpriteSymbol } from '~/src/build/SpriteSymbol'
 import { logger } from '~/src/build/utils'
+import type { ModuleHelper } from '~/src/build/ModuleHelper'
 
 type MockSymbol = {
   id: string
@@ -55,15 +55,12 @@ vi.mock('./SpriteSymbol', () => ({
 
 describe('Sprite', () => {
   // Test fixtures.
-  const mockContext: ModuleContext = {
-    dev: true,
-    srcDir: '/mock/src',
-    buildAssetsDir: '/mock/assets',
-    runtimeOptions: {
-      ariaHidden: true,
+  const mockHelper = {
+    isDev: true,
+    paths: {
+      srcDir: '/app/src',
     },
-    buildResolver: vi.fn() as unknown as ModuleContext['buildResolver'],
-  }
+  } as unknown as ModuleHelper
 
   const mockConfig = {
     importPatterns: ['**/*.svg'],
@@ -103,11 +100,10 @@ describe('Sprite', () => {
   })
 
   it('should initialize with correct properties', () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     expect(sprite.name).toBe('default')
     expect(sprite.config).toEqual(mockConfig)
-    expect(sprite.context).toEqual(mockContext)
     expect(sprite.generatedSprite).toBeNull()
     expect(sprite.hash).toBeNull()
   })
@@ -126,17 +122,17 @@ describe('Sprite', () => {
     const spriteWithSingleProcessor = new Sprite(
       'default',
       configWithSingleProcessor,
-      mockContext,
+      mockHelper,
     )
     const spriteWithMultipleProcessors = new Sprite(
       'default',
       configWithMultipleProcessors,
-      mockContext,
+      mockHelper,
     )
     const spriteWithoutProcessors = new Sprite(
       'default',
       mockConfig,
-      mockContext,
+      mockHelper,
     )
 
     expect(spriteWithSingleProcessor['processors']).toHaveLength(1)
@@ -145,7 +141,7 @@ describe('Sprite', () => {
   })
 
   it('should reset generated sprite and hash', () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
     sprite.generatedSprite = 'mock-sprite'
     sprite.hash = 'mock-hash'
 
@@ -156,7 +152,7 @@ describe('Sprite', () => {
   })
 
   it('should get sprite file name with hash', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     // Mock getSprite to return a fixed hash.
     vi.spyOn(sprite, 'getSprite').mockResolvedValue({
@@ -169,20 +165,20 @@ describe('Sprite', () => {
   })
 
   it('should get prefix based on name', () => {
-    const defaultSprite = new Sprite('default', mockConfig, mockContext)
-    const customSprite = new Sprite('custom', mockConfig, mockContext)
+    const defaultSprite = new Sprite('default', mockConfig, mockHelper)
+    const customSprite = new Sprite('custom', mockConfig, mockHelper)
 
     expect(defaultSprite.getPrefix()).toBe('')
     expect(customSprite.getPrefix()).toBe('custom/')
   })
 
   it('should get import pattern files when configured', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     const files = await sprite['getImportPatternFiles']()
 
     expect(nuxtKit.resolveFiles).toHaveBeenCalledWith(
-      mockContext.srcDir,
+      mockHelper.paths.srcDir,
       mockConfig.importPatterns,
       { followSymbolicLinks: false },
     )
@@ -191,7 +187,7 @@ describe('Sprite', () => {
 
   it('should return empty array when no import patterns', async () => {
     const configWithoutPatterns = { ...mockConfig, importPatterns: undefined }
-    const sprite = new Sprite('default', configWithoutPatterns, mockContext)
+    const sprite = new Sprite('default', configWithoutPatterns, mockHelper)
 
     const files = await sprite['getImportPatternFiles']()
 
@@ -200,7 +196,7 @@ describe('Sprite', () => {
   })
 
   it('should initialize sprite with symbols from import patterns and symbol files', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     await sprite.init()
 
@@ -213,7 +209,7 @@ describe('Sprite', () => {
   it('should log error when no symbols found', async () => {
     vi.mocked(nuxtKit.resolveFiles).mockResolvedValue([])
     const configWithoutSymbols = { ...mockConfig, symbolFiles: undefined }
-    const sprite = new Sprite('default', configWithoutSymbols, mockContext)
+    const sprite = new Sprite('default', configWithoutSymbols, mockHelper)
     const loggerSpy = vi.spyOn(logger, 'error')
 
     await sprite.init()
@@ -224,7 +220,7 @@ describe('Sprite', () => {
   })
 
   it('should get processed symbols sorted by ID', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     // Create symbols with specific IDs in reverse order.
     sprite['symbols'] = mockSymbols([
@@ -259,7 +255,7 @@ describe('Sprite', () => {
   })
 
   it('should filter out symbols with null processed data', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     // Create symbols where some return null.
     sprite['symbols'] = mockSymbols([
@@ -281,7 +277,7 @@ describe('Sprite', () => {
   })
 
   it('should generate sprite SVG with symbols', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     // Setup sprite with symbols.
     sprite['symbols'] = mockSymbols([
@@ -331,7 +327,7 @@ describe('Sprite', () => {
       processSprite: [processor1, processor2],
     }
 
-    const sprite = new Sprite('default', configWithProcessors, mockContext)
+    const sprite = new Sprite('default', configWithProcessors, mockHelper)
 
     // Setup sprite with symbols.
     sprite['symbols'] = mockSymbols([
@@ -357,7 +353,7 @@ describe('Sprite', () => {
   })
 
   it('should cache generated sprite and hash', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     // Setup sprite with symbols.
     sprite['symbols'] = mockSymbols([
@@ -388,7 +384,7 @@ describe('Sprite', () => {
   })
 
   it('should generate a new sprite after reset', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     // Setup sprite with symbols.
     sprite['symbols'] = mockSymbols([
@@ -419,7 +415,7 @@ describe('Sprite', () => {
   })
 
   it('should handle add event when file matches import patterns', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
     const newFilePath = '/mock/src/icons/new-icon.svg'
 
     // Mock getImportPatternFiles to include the new file.
@@ -441,7 +437,7 @@ describe('Sprite', () => {
   })
 
   it('should handle change event for existing file', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     // Initialize with symbols.
     await sprite.init()
@@ -461,7 +457,7 @@ describe('Sprite', () => {
   })
 
   it('should handle unlink event for existing file', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     // Initialize with symbols.
     await sprite.init()
@@ -483,7 +479,7 @@ describe('Sprite', () => {
   })
 
   it('should handle add directory event', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     // Start with no symbols.
     sprite['symbols'] = []
@@ -499,7 +495,7 @@ describe('Sprite', () => {
   })
 
   it('should handle unlink directory event', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     // Start with symbols in the directory to be removed.
     sprite['symbols'] = mockSymbols([
@@ -534,7 +530,7 @@ describe('Sprite', () => {
   })
 
   it('should use ohash to generate sprite hash', async () => {
-    const sprite = new Sprite('default', mockConfig, mockContext)
+    const sprite = new Sprite('default', mockConfig, mockHelper)
 
     // Setup sprite with minimal symbols.
     sprite['symbols'] = mockSymbols([

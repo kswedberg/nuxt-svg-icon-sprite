@@ -1,5 +1,6 @@
-import type { ModuleContext, SpriteConfig } from './types'
 import { Sprite } from './Sprite'
+import type { ModuleHelper } from './ModuleHelper'
+import type { WatchEvent } from 'nuxt/schema'
 
 type Template =
   | 'runtime'
@@ -13,17 +14,14 @@ function anyChanged(results: boolean[]): boolean {
 
 export class Collector {
   sprites: Sprite[]
-  context: ModuleContext
   templates = new Map<Template, string>()
 
-  constructor(
-    spritesConfig: Record<string, SpriteConfig>,
-    context: ModuleContext,
-  ) {
-    this.sprites = Object.entries(spritesConfig).map(([key, config]) => {
-      return new Sprite(key, config, context)
-    })
-    this.context = context
+  constructor(private helper: ModuleHelper) {
+    this.sprites = Object.entries(helper.options.sprites).map(
+      ([key, config]) => {
+        return new Sprite(key, config, helper)
+      },
+    )
   }
 
   public getTemplate(key: Template): string {
@@ -49,13 +47,13 @@ export class Collector {
     const allSymbols: string[] = []
 
     for (const sprite of this.sprites) {
-      if (this.context.dev) {
+      if (this.helper.isDev) {
         const { hash } = await sprite.getSprite()
         fileNames[sprite.name] =
           `/__nuxt/nuxt-svg-icon-sprite/sprite.${sprite.name}.${hash}.svg`
       } else {
         fileNames[sprite.name] =
-          this.context.buildAssetsDir + (await sprite.getSpriteFileName())
+          this.helper.paths.buildAssetsDir + (await sprite.getSpriteFileName())
       }
 
       const prefix = sprite.name === 'default' ? '' : sprite.name + '/'
@@ -67,12 +65,16 @@ export class Collector {
 
     allSymbols.sort()
 
+    const runtimeOptions = {
+      ariaHidden: !!this.helper.options.ariaHidden,
+    }
+
     this.setTemplate(
       'runtime',
       `
 export const isServer = import.meta.server
 export const spritePaths = Object.freeze(${JSON.stringify(fileNames, null, 2)})
-export const runtimeOptions = Object.freeze(${JSON.stringify(this.context.runtimeOptions)})
+export const runtimeOptions = Object.freeze(${JSON.stringify(runtimeOptions)})
 export const allSymbolNames = Object.freeze(${JSON.stringify(allSymbols, null, 2)})
 `,
     )
@@ -136,7 +138,7 @@ declare module '#nuxt-svg-icon-sprite/runtime' {
 
         // In dev mode, always use the inlined markup.
         // In build, use dynamic import on client and inline on the server.
-        const importStatement = this.context.dev
+        const importStatement = this.helper.isDev
           ? importMethodInline
           : `import.meta.client ? ${importMethodDynamic} : ${importMethodInline}`
 
@@ -221,5 +223,32 @@ declare module '#nuxt-svg-icon-sprite/symbol-import' {
         this.sprites.map((sprite) => sprite.handleUnlinkDir(folderPath)),
       ),
     )
+  }
+
+  public async onBuilderWatch(event: WatchEvent, providedPath: string) {
+    const isSvgFile = !!providedPath.match(/\.(svg)$/)
+
+    // Make sure the path is always absolute.
+    const path = providedPath.startsWith('/')
+      ? providedPath
+      : this.helper.resolvers.src.resolve(providedPath)
+
+    let hasChanged = false
+
+    if (event === 'add' && isSvgFile) {
+      hasChanged = await this.handleAdd(path)
+    } else if (event === 'change' && isSvgFile) {
+      hasChanged = await this.handleChange(path)
+    } else if (event === 'unlink' && isSvgFile) {
+      hasChanged = await this.handleUnlink(path)
+    } else if (event === 'addDir') {
+      hasChanged = await this.handleAddDir()
+    } else if (event === 'unlinkDir') {
+      hasChanged = await this.handleUnlinkDir(path)
+    }
+
+    if (hasChanged) {
+      await this.updateTemplates()
+    }
   }
 }

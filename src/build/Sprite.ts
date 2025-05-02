@@ -2,8 +2,9 @@ import { hash } from 'ohash'
 import { HTMLElement } from 'node-html-parser'
 import { resolveFiles, resolvePath } from '@nuxt/kit'
 import { logger } from './utils'
-import type { ModuleContext, Processor, SpriteConfig } from './types'
+import type { Processor, SpriteConfig } from './types'
 import { SpriteSymbol, type SpriteSymbolProcessed } from './SpriteSymbol'
+import type { ModuleHelper } from './ModuleHelper'
 
 export class Sprite {
   /**
@@ -15,11 +16,6 @@ export class Sprite {
    * The sprite configuration.
    */
   config: SpriteConfig
-
-  /**
-   * The module context.
-   */
-  context: ModuleContext
 
   /**
    * The symbols beloning to the sprite.
@@ -38,10 +34,13 @@ export class Sprite {
 
   private processors: Processor[]
 
-  constructor(name: string, config: SpriteConfig, context: ModuleContext) {
+  constructor(
+    name: string,
+    config: SpriteConfig,
+    private helper: ModuleHelper,
+  ) {
     this.name = name
     this.config = config
-    this.context = context
 
     if (config.processSprite) {
       this.processors = Array.isArray(config.processSprite)
@@ -68,9 +67,13 @@ export class Sprite {
   private getImportPatternFiles(): Promise<string[]> {
     if (this.config.importPatterns?.length) {
       // Find all required files.
-      return resolveFiles(this.context.srcDir, this.config.importPatterns, {
-        followSymbolicLinks: false,
-      })
+      return resolveFiles(
+        this.helper.paths.srcDir,
+        this.config.importPatterns,
+        {
+          followSymbolicLinks: false,
+        },
+      )
     }
 
     return Promise.resolve([])
@@ -143,7 +146,7 @@ export class Sprite {
         symbol.setAttributes(processed.processed.attributes)
         symbol.setAttribute('id', processed.symbol.id)
         symbol.innerHTML = processed.processed.symbolDom
-        if (this.context.dev) {
+        if (this.helper.isDev) {
           defs.append(`\n\n<!-- File: ${processed.symbol.filePath} -->\n`)
         }
         defs.appendChild(symbol)

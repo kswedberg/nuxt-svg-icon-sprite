@@ -1,34 +1,16 @@
 import {
-  createResolver,
   defineNuxtModule,
   addTemplate,
-  addComponent,
   addTypeTemplate,
   addDevServerHandler,
-  addImports,
   addServerTemplate,
 } from '@nuxt/kit'
 import { createDevServerHandler } from './build/devServerHandler'
-import { joinURL, withLeadingSlash, withTrailingSlash } from 'ufo'
-import type { SpriteConfig, RuntimeOptions } from './build/types'
+import type { ModuleOptions } from './build/types'
 import { Collector } from './build/Collector'
+import { ModuleHelper } from './build/ModuleHelper'
 
-/**
- * Options for the nuxt-svg-icon-sprite module.
- */
-export type ModuleOptions = {
-  /**
-   * Define the config for each sprite to generate.
-   *
-   * If a sprite with name `default` is provided the names won't be prefixed.
-   */
-  sprites: Record<string, SpriteConfig>
-
-  /**
-   * Adds aria-hidden="true" to all rendered SVGs.
-   */
-  ariaHidden?: boolean
-}
+export type { ModuleOptions }
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
@@ -43,69 +25,21 @@ export default defineNuxtModule<ModuleOptions>({
     ariaHidden: false,
   },
   async setup(moduleOptions, nuxt) {
-    const DEV = nuxt.options.dev
-    if (!moduleOptions.sprites.default) {
-      moduleOptions.sprites.default = {
-        importPatterns: ['./assets/symbols/*.svg'],
-      }
-    }
+    const helper = new ModuleHelper(nuxt, import.meta.url, moduleOptions)
 
-    const buildResolver = createResolver(nuxt.options.buildDir)
+    helper.addAlias('#nuxt-svg-icon-sprite', helper.paths.moduleBuildDir)
+    helper.transpile(helper.resolvers.module.resolve('runtime'))
 
-    // The path to the source directory of this module's consumer.
-    const srcDir = nuxt.options.srcDir
+    helper.addComposable('useSpriteData')
 
-    const srcResolver = createResolver(srcDir)
+    helper.addComponent('SpriteSymbol')
+    helper.addComponent('SpriteSymbolInline')
 
-    // The path of this module.
-    const resolver = createResolver(import.meta.url)
-
-    // Add plugin and transpile runtime directory.
-    nuxt.options.build.transpile.push(resolver.resolve('runtime'))
-
-    // Add composables.
-    addImports({
-      name: 'useSpriteData',
-      from: resolver.resolve('./runtime/composables/useSpriteData'),
-    })
-
-    // Add the component.
-    addComponent({
-      filePath: resolver.resolve('./runtime/components/SpriteSymbol'),
-      name: 'SpriteSymbol',
-      global: true,
-    })
-
-    addComponent({
-      filePath: resolver.resolve('./runtime/components/SpriteSymbolInline'),
-      name: 'SpriteSymbolInline',
-      global: true,
-    })
-
-    const runtimeOptions: RuntimeOptions = {
-      ariaHidden: !!moduleOptions.ariaHidden,
-    }
-
-    const buildAssetsDir = withLeadingSlash(
-      withTrailingSlash(
-        joinURL(
-          nuxt.options.app.baseURL.replace(/^\.\//, '/') || '/',
-          nuxt.options.app.buildAssetsDir,
-        ),
-      ),
-    )
-
-    const collector = new Collector(moduleOptions.sprites, {
-      dev: DEV,
-      srcDir,
-      buildAssetsDir,
-      runtimeOptions,
-      buildResolver,
-    })
+    const collector = new Collector(helper)
 
     await collector.init()
 
-    if (DEV) {
+    if (helper.isDev) {
       // In dev mode, the sprite is served by this server handler.
       addDevServerHandler({
         handler: createDevServerHandler(collector),
@@ -115,7 +49,7 @@ export default defineNuxtModule<ModuleOptions>({
       // For the build the sprite is generated as a dist file.
       for (const sprite of collector.sprites) {
         const fileName = await sprite.getSpriteFileName()
-        const path = 'dist/client' + buildAssetsDir + fileName
+        const path = 'dist/client' + helper.paths.buildAssetsDir + fileName
         addTemplate({
           filename: path,
           write: true,
@@ -150,61 +84,49 @@ export default defineNuxtModule<ModuleOptions>({
       }
     }
 
-    // Template containing the types and the relative URL path to the generated
-    // sprite.
-    nuxt.options.alias['#nuxt-svg-icon-sprite/runtime'] = addTemplate({
+    addTemplate({
       filename: 'nuxt-svg-icon-sprite/runtime.js',
       getContents: () => collector.getTemplate('runtime'),
-    }).dst
+    })
 
     addServerTemplate({
       filename: '#nuxt-svg-icon-sprite/runtime',
       getContents: () => collector.getTemplate('runtime'),
     })
 
-    addTypeTemplate({
-      filename: 'nuxt-svg-icon-sprite/runtime.d.ts',
-      write: true,
-      getContents: () => collector.getTemplate('runtime-types'),
-    })
+    addTypeTemplate(
+      {
+        filename: 'nuxt-svg-icon-sprite/runtime.d.ts',
+        write: true,
+        getContents: () => collector.getTemplate('runtime-types'),
+      },
+      {
+        nitro: true,
+        nuxt: true,
+      },
+    )
 
-    // Contains the imports for all symbols.
-    nuxt.options.alias['#nuxt-svg-icon-sprite/symbol-import'] = addTemplate({
+    addTemplate({
       filename: 'nuxt-svg-icon-sprite/symbol-import.js',
       getContents: () => collector.getTemplate('symbol-import'),
-    }).dst
-
-    addTypeTemplate({
-      filename: 'nuxt-svg-icon-sprite/symbol-import.d.ts',
-      write: true,
-      getContents: () => collector.getTemplate('symbol-import-types'),
     })
 
-    nuxt.hook('builder:watch', async (event, providedPath) => {
-      const isSvgFile = !!providedPath.match(/\.(svg)$/)
+    addTypeTemplate(
+      {
+        filename: 'nuxt-svg-icon-sprite/symbol-import.d.ts',
+        write: true,
+        getContents: () => collector.getTemplate('symbol-import-types'),
+      },
+      {
+        nitro: true,
+        nuxt: true,
+      },
+    )
 
-      // Make sure the path is always absolute.
-      const path = providedPath.startsWith('/')
-        ? providedPath
-        : srcResolver.resolve(providedPath)
+    helper.applyBuildConfig()
 
-      let hasChanged = false
-
-      if (event === 'add' && isSvgFile) {
-        hasChanged = await collector.handleAdd(path)
-      } else if (event === 'change' && isSvgFile) {
-        hasChanged = await collector.handleChange(path)
-      } else if (event === 'unlink' && isSvgFile) {
-        hasChanged = await collector.handleUnlink(path)
-      } else if (event === 'addDir') {
-        hasChanged = await collector.handleAddDir()
-      } else if (event === 'unlinkDir') {
-        hasChanged = await collector.handleUnlinkDir(path)
-      }
-
-      if (hasChanged) {
-        await collector.updateTemplates()
-      }
+    nuxt.hook('builder:watch', async (event, path) => {
+      await collector.onBuilderWatch(event, path)
     })
   },
 })
