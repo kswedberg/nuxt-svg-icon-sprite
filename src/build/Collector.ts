@@ -36,6 +36,7 @@ export class Collector {
     return `
 export const SPRITE_PATHS = ${JSON.stringify(fileNames, null, 2)}
 export const runtimeOptions = ${JSON.stringify(this.context.runtimeOptions)}
+export const isServer = import.meta.server
 `
   }
 
@@ -66,6 +67,7 @@ declare module '#nuxt-svg-icon-sprite/runtime' {
 
   export const SPRITE_PATHS: Record<string, string>
   export const runtimeOptions: RuntimeOptions
+  export const isServer: boolean
 }`
   }
 

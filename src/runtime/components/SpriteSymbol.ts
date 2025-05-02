@@ -1,7 +1,11 @@
 import { defineComponent, h } from 'vue'
 import { useHead } from '#imports'
-import type { NuxtSvgSpriteSymbol } from '#nuxt-svg-icon-sprite/runtime'
-import { SPRITE_PATHS, runtimeOptions } from '#nuxt-svg-icon-sprite/runtime'
+import {
+  SPRITE_PATHS,
+  runtimeOptions,
+  isServer,
+  type NuxtSvgSpriteSymbol,
+} from '#nuxt-svg-icon-sprite/runtime'
 import { getSymbolNameParts } from '../helpers'
 
 type Props = {
@@ -34,7 +38,7 @@ export default defineComponent<Props>({
     noWrapper: Boolean,
   },
   setup(props) {
-    if (import.meta.server) {
+    if (isServer) {
       const { sprite } = getSymbolNameParts(props.name)
       const href = SPRITE_PATHS[sprite]
       if (href) {
