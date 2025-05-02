@@ -34,7 +34,7 @@
     "dev": "nuxi dev playground --trace-warnings",
     "dev:debug": "nuxi dev playground --trace-warnings --inspect",
     "dev:build": "nuxi build playground",
-    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
+    "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground && nuxi prepare ./test/e2e/fixtures/basic",
     "dev:serve": "node playground/.output/server/index.mjs",
     "dev:fixtures:basic": "nuxi dev ./test/e2e/fixtures/basic",
     "docs:dev": "vitepress dev docs --port 5000",
