@@ -123,7 +123,8 @@ describe('SymbolInline', () => {
   })
 
   it('does not include id attribute from the imported symbol', async () => {
-    // Add a symbol with an id attribute that should be removed
+    // Add a symbol with an id attribute that should be removed.
+    // @ts-ignore
     SYMBOL_IMPORTS_MOCK['with-id'] = {
       attributes: {
         viewBox: '0 0 24 24',
@@ -143,7 +144,6 @@ describe('SymbolInline', () => {
     expect(component.html()).not.toContain('id="original-id"')
   })
 
-  // Replace the reactivity test with two separate tests
   it('renders valid-symbol correctly', async () => {
     const component = await mountSuspended(SpriteSymbolInline, {
       props: {

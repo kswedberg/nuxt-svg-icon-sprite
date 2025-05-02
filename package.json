@@ -36,6 +36,7 @@
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxi prepare playground",
     "dev:serve": "node playground/.output/server/index.mjs",
+    "dev:fixtures:basic": "nuxi dev ./test/e2e/fixtures/basic",
     "docs:dev": "vitepress dev docs --port 5000",
     "docs:build": "vitepress build docs",
     "docs:serve": "vitepress serve docs --port 5000",
