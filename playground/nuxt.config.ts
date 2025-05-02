@@ -37,7 +37,7 @@ const symbolProcessors = [
 ]
 
 export default defineNuxtConfig({
-  modules: ['./../src/module', '@nuxt/eslint'],
+  modules: ['./../src/module', '@nuxt/eslint', '@nuxt/test-utils/module'],
 
   debug: false,
 
