@@ -4,6 +4,35 @@ import { parse } from 'node-html-parser'
 import type { SpriteConfig, Processor } from './types'
 import { logger } from './utils'
 
+function toValidId(input: string): string {
+  let sanitized = input
+    .trim()
+    .replace(/[^\w-]/g, '-')
+    .replace(/-+/g, '-')
+
+  // Make sure it starts with a valid character (letter or underscore)
+  // If it starts with a number or hyphen, prefix with 'id-'.
+  if (/^[0-9-]/.test(sanitized)) {
+    sanitized = 'id-' + sanitized
+  }
+
+  if (!sanitized) {
+    throw new Error('Failed to generate ID for symbol.')
+  }
+
+  const MAX_LENGTH = 64
+  if (sanitized.length > MAX_LENGTH) {
+    sanitized = sanitized.substring(0, MAX_LENGTH)
+
+    // Make sure we don't end with a hyphen.
+    if (sanitized.endsWith('-')) {
+      sanitized = sanitized.slice(0, -1)
+    }
+  }
+
+  return sanitized
+}
+
 /**
  * A fully processed symbol.
  */
@@ -20,7 +49,7 @@ export class SpriteSymbol {
   processors: Processor[]
 
   constructor(filePath: string, config: SpriteConfig) {
-    this.id = path.parse(filePath).name
+    this.id = toValidId(path.parse(filePath).name)
     this.filePath = filePath
     this.config = config
     if (config.processSpriteSymbol) {
