@@ -144,9 +144,9 @@ const { symbols } = useSpriteData()
 
 ## Processing SVG Files
 
-By default the collect SVG symbols are used as-is, including any attributes such
-as `width` or `height`. You can optionally provide processor to alter the parsed
-SVG before it is added to the sprite.
+By default the collected SVG symbols are used as-is, including any attributes
+such as `width` or `height`. You can optionally provide processors to alter the
+parsed SVG before it is added to the sprite.
 
 The modules exports a few processor you can use:
 
@@ -182,7 +182,7 @@ can add a `data-keep-color` attribute on them - they will then be skipped.
 You can also provide your own processors:
 
 ```typescript
-import { removeSizes, forceCurrentColor } from 'nuxt-svg-icon-sprite/processor'
+import { removeSizes, forceCurrentColor } from 'nuxt-svg-icon-sprite/processors'
 
 export default defineNuxtConfig({
   modules: ['nuxt-svg-icon-sprite'],
