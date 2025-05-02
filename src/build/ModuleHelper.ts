@@ -6,7 +6,7 @@ import {
   type Resolver,
 } from '@nuxt/kit'
 import { joinURL, withLeadingSlash, withTrailingSlash } from 'ufo'
-import type { Nuxt } from 'nuxt/schema'
+import type { Component, Nuxt } from 'nuxt/schema'
 import type { ModuleOptions } from './types'
 import { defu } from 'defu'
 
@@ -207,10 +207,13 @@ export class ModuleHelper {
     })
   }
 
-  public addComponent(name: string) {
+  public addComponent(name: string, file: string, mode: Component['mode']) {
     addComponent({
-      filePath: this.resolvers.module.resolve('./runtime/components/' + name),
+      filePath: this.resolvers.module.resolve(
+        `./runtime/components/${name}/${file}`,
+      ),
       name,
+      mode,
       global: true,
     })
   }

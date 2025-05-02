@@ -14,7 +14,11 @@ function anyChanged(results: boolean[]): boolean {
 
 export class Collector {
   sprites: Sprite[]
-  templates = new Map<Template, string>()
+
+  /**
+   * The contents of our templates.
+   */
+  private templates = new Map<Template, string>()
 
   constructor(private helper: ModuleHelper) {
     this.sprites = Object.entries(helper.options.sprites).map(
@@ -63,6 +67,7 @@ export class Collector {
       }
     }
 
+    // Sort symbols alphabetically.
     allSymbols.sort()
 
     const runtimeOptions = {
@@ -73,9 +78,9 @@ export class Collector {
       'runtime',
       `
 export const isServer = import.meta.server
-export const spritePaths = Object.freeze(${JSON.stringify(fileNames, null, 2)})
-export const runtimeOptions = Object.freeze(${JSON.stringify(runtimeOptions)})
-export const allSymbolNames = Object.freeze(${JSON.stringify(allSymbols, null, 2)})
+export const spritePaths = Object.freeze(${JSON.stringify(fileNames, null, 2)});
+export const runtimeOptions = Object.freeze(${JSON.stringify(runtimeOptions, null, 2)});
+export const allSymbolNames = Object.freeze(${JSON.stringify(allSymbols, null, 2)});
 `,
     )
 
@@ -122,35 +127,41 @@ declare module '#nuxt-svg-icon-sprite/runtime' {
 `,
     )
 
-    const imports: string[] = []
+    const importsInline: string[] = []
+    const importsDynamic: string[] = []
 
     for (const sprite of this.sprites) {
       const processed = await sprite.getProcessedSymbols()
 
       for (const v of processed) {
         const id = sprite.getPrefix() + v.symbol.id
-
         const importMethodInline = JSON.stringify({
           content: v.processed.symbolDom,
           attributes: v.processed.attributes,
         })
-        const importMethodDynamic = `() => import('#build/nuxt-svg-icon-sprite/symbols/${id}').then(v => v.default)`
+        const property = JSON.stringify(id)
+        importsInline.push(`${property}: ${importMethodInline}`)
 
-        // In dev mode, always use the inlined markup.
-        // In build, use dynamic import on client and inline on the server.
-        const importStatement = this.helper.isDev
-          ? importMethodInline
-          : `import.meta.client ? ${importMethodDynamic} : ${importMethodInline}`
-
-        imports.push(`${JSON.stringify(id)}: ${importStatement}`)
+        // This is only needed in the build.
+        if (!this.helper.isDev) {
+          const importMethodDynamic = `() => import('#build/nuxt-svg-icon-sprite/symbols/${id}').then(v => v.default)`
+          importsDynamic.push(`${property}: ${importMethodDynamic}`)
+        }
       }
     }
+
+    importsInline.sort()
+    importsDynamic.sort()
 
     this.setTemplate(
       'symbol-import',
       `
-export const symbolImports = {
-  ${imports.sort().join(',\n  ')}
+export const symbolImportsInline = {
+  ${importsInline.join(',\n  ')}
+}
+
+export const symbolImportsDynamic = {
+  ${importsDynamic.join(',\n  ')}
 }
 `,
     )
@@ -168,7 +179,8 @@ declare module '#nuxt-svg-icon-sprite/symbol-import' {
 
   type SymbolImportDynamic = () => Promise<SymbolImport>
 
-  export const symbolImports: Record<NuxtSvgSpriteSymbol, SymbolImport | SymbolImportDynamic>
+  export const symbolImportsInline: Record<NuxtSvgSpriteSymbol, SymbolImport>
+  export const symbolImportsDynamic: Record<NuxtSvgSpriteSymbol, SymbolImportDynamic>
 }
 `,
     )

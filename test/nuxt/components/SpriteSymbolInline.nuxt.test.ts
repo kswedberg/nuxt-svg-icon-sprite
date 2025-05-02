@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import SpriteSymbolInline from '~/src/runtime/components/SpriteSymbolInline'
+import SpriteSymbolInline from '~/src/runtime/components/SpriteSymbolInline/client'
 
 // Mock the runtime options
 const runtimeMock = vi.hoisted(() => ({
@@ -12,7 +12,38 @@ const runtimeMock = vi.hoisted(() => ({
 vi.mock('#nuxt-svg-icon-sprite/runtime', () => runtimeMock)
 
 // Mock symbolImports.
-const symbolImports = vi.hoisted(() => ({
+const symbolImportsDynamic = vi.hoisted(() => ({
+  'valid-symbol': () =>
+    Promise.resolve({
+      attributes: {
+        viewBox: '0 0 24 24',
+        width: '24',
+        height: '24',
+      },
+      content: '<path d="M12 2L2 7l10 5 10-5-10-5z"></path>',
+    }),
+  'special/icon': () =>
+    Promise.resolve({
+      attributes: {
+        viewBox: '0 0 16 16',
+        width: '16',
+        height: '16',
+      },
+      content: '<circle cx="8" cy="8" r="7"></circle>',
+    }),
+  // Add async symbol import
+  'async-symbol': () =>
+    Promise.resolve({
+      attributes: {
+        viewBox: '0 0 32 32',
+        width: '32',
+        height: '32',
+      },
+      content: '<rect x="4" y="4" width="24" height="24"></rect>',
+    }),
+}))
+
+const symbolImportsInline = vi.hoisted(() => ({
   'valid-symbol': {
     attributes: {
       viewBox: '0 0 24 24',
@@ -30,19 +61,19 @@ const symbolImports = vi.hoisted(() => ({
     content: '<circle cx="8" cy="8" r="7"></circle>',
   },
   // Add async symbol import
-  'async-symbol': () =>
-    Promise.resolve({
-      attributes: {
-        viewBox: '0 0 32 32',
-        width: '32',
-        height: '32',
-      },
-      content: '<rect x="4" y="4" width="24" height="24"></rect>',
-    }),
+  'async-symbol': {
+    attributes: {
+      viewBox: '0 0 32 32',
+      width: '32',
+      height: '32',
+    },
+    content: '<rect x="4" y="4" width="24" height="24"></rect>',
+  },
 }))
 
 vi.mock('#nuxt-svg-icon-sprite/symbol-import', () => ({
-  symbolImports,
+  symbolImportsDynamic,
+  symbolImportsInline,
 }))
 
 describe('SymbolInline', () => {
@@ -125,15 +156,16 @@ describe('SymbolInline', () => {
   it('does not include id attribute from the imported symbol', async () => {
     // Add a symbol with an id attribute that should be removed.
     // @ts-ignore
-    symbolImports['with-id'] = {
-      attributes: {
-        viewBox: '0 0 24 24',
-        width: '24',
-        height: '24',
-        id: 'original-id',
-      },
-      content: '<path d="M5 5h14v14H5z"></path>',
-    }
+    symbolImportsDynamic['with-id'] = () =>
+      Promise.resolve({
+        attributes: {
+          viewBox: '0 0 24 24',
+          width: '24',
+          height: '24',
+          id: 'original-id',
+        },
+        content: '<path d="M5 5h14v14H5z"></path>',
+      })
 
     const component = await mountSuspended(SpriteSymbolInline, {
       props: {

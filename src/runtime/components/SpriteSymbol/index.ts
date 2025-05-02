@@ -6,7 +6,7 @@ import {
   isServer,
   type NuxtSvgSpriteSymbol,
 } from '#nuxt-svg-icon-sprite/runtime'
-import { getSymbolNameParts } from '../helpers'
+import { getSymbolNameParts } from '../../helpers'
 
 type Props = {
   /**
