@@ -169,36 +169,42 @@ export class Sprite {
     }
   }
 
-  public async handleAdd(path: string): Promise<void> {
+  public async handleAdd(path: string): Promise<boolean> {
     if (this.config.importPatterns) {
       const allFiles = await this.getImportPatternFiles()
       if (allFiles.includes(path)) {
         this.symbols.push(new SpriteSymbol(path, this.config))
         this.reset()
+        return true
       }
     }
+
+    return false
   }
 
-  public handleChange(path: string): Promise<void> {
+  public async handleChange(path: string): Promise<boolean> {
     const match = this.symbols.find((v) => v.filePath === path)
     if (match) {
       match.reset()
       this.reset()
+      return true
     }
-    return Promise.resolve()
+
+    return false
   }
 
-  public handleUnlink(path: string): Promise<void> {
+  public async handleUnlink(path: string): Promise<boolean> {
     const match = this.symbols.find((v) => v.filePath === path)
     if (match) {
       this.symbols = this.symbols.filter((v) => v.id !== match.id)
       this.reset()
+      return true
     }
 
-    return Promise.resolve()
+    return false
   }
 
-  public async handleAddDir(): Promise<void> {
+  public async handleAddDir(): Promise<boolean> {
     const importPatternFiles = await this.getImportPatternFiles()
     const existingFilePaths = this.symbols.map((v) => v.filePath)
 
@@ -213,10 +219,13 @@ export class Sprite {
 
     if (hasAdded) {
       this.reset()
+      return true
     }
+
+    return false
   }
 
-  public handleUnlinkDir(folderPath: string): Promise<void> {
+  public async handleUnlinkDir(folderPath: string): Promise<boolean> {
     // Find symbols that contain the removed folder path.
     const toRemove = this.symbols
       .filter((v) => v.filePath.includes(folderPath))
@@ -224,7 +233,9 @@ export class Sprite {
     if (toRemove.length) {
       this.symbols = this.symbols.filter((v) => !toRemove.includes(v.filePath))
       this.reset()
+      return true
     }
-    return Promise.resolve()
+
+    return false
   }
 }

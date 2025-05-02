@@ -4,7 +4,6 @@ import {
   addTemplate,
   addComponent,
   addTypeTemplate,
-  addServerTemplate,
   addDevServerHandler,
   addImports,
 } from '@nuxt/kit'
@@ -183,16 +182,17 @@ export default defineNuxtModule<ModuleOptions>({
         ? providedPath
         : srcResolver.resolve(providedPath)
 
+      let hasChanged = false
       if (event === 'add' && isSvgFile) {
-        await collector.handleAdd(path)
+        hasChanged = await collector.handleAdd(path)
       } else if (event === 'change' && isSvgFile) {
-        await collector.handleChange(path)
+        hasChanged = await collector.handleChange(path)
       } else if (event === 'unlink' && isSvgFile) {
-        await collector.handleUnlink(path)
+        hasChanged = await collector.handleUnlink(path)
       } else if (event === 'addDir') {
-        await collector.handleAddDir()
+        hasChanged = await collector.handleAddDir()
       } else if (event === 'unlinkDir') {
-        await collector.handleUnlinkDir(path)
+        hasChanged = await collector.handleUnlinkDir(path)
       }
     })
   },

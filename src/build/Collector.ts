@@ -1,6 +1,10 @@
 import type { ModuleContext, SpriteConfig } from './types'
 import { Sprite } from './Sprite'
 
+function anyChanged(results: boolean[]): boolean {
+  return results.some((v) => v === true)
+}
+
 export class Collector {
   sprites: Sprite[]
   context: ModuleContext
@@ -146,37 +150,51 @@ declare module '#nuxt-svg-icon-sprite/runtime' {
   /**
    * SVG file was added.
    */
-  async handleAdd(path: string): Promise<void> {
-    await Promise.all(this.sprites.map((sprite) => sprite.handleAdd(path)))
+  async handleAdd(path: string): Promise<boolean> {
+    return anyChanged(
+      await Promise.all(this.sprites.map((sprite) => sprite.handleAdd(path))),
+    )
   }
 
   /**
    * SVG file was changed.
    */
-  async handleChange(path: string): Promise<void> {
-    await Promise.all(this.sprites.map((sprite) => sprite.handleChange(path)))
+  async handleChange(path: string): Promise<boolean> {
+    return anyChanged(
+      await Promise.all(
+        this.sprites.map((sprite) => sprite.handleChange(path)),
+      ),
+    )
   }
 
   /**
    * SVG file was removed.
    */
-  async handleUnlink(path: string): Promise<void> {
-    await Promise.all(this.sprites.map((sprite) => sprite.handleUnlink(path)))
+  async handleUnlink(path: string): Promise<boolean> {
+    return anyChanged(
+      await Promise.all(
+        this.sprites.map((sprite) => sprite.handleUnlink(path)),
+      ),
+    )
   }
 
   /**
    * Any directory was added.
    */
-  async handleAddDir(): Promise<void> {
-    await Promise.all(this.sprites.map((sprite) => sprite.handleAddDir()))
+  async handleAddDir(): Promise<boolean> {
+    return anyChanged(
+      await Promise.all(this.sprites.map((sprite) => sprite.handleAddDir())),
+    )
   }
 
   /**
    * Any directory was removed.
    */
-  async handleUnlinkDir(folderPath: string): Promise<void> {
-    await Promise.all(
-      this.sprites.map((sprite) => sprite.handleUnlinkDir(folderPath)),
+  async handleUnlinkDir(folderPath: string): Promise<boolean> {
+    return anyChanged(
+      await Promise.all(
+        this.sprites.map((sprite) => sprite.handleUnlinkDir(folderPath)),
+      ),
     )
   }
 }
