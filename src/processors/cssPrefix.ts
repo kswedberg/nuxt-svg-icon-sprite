@@ -11,16 +11,55 @@ export const cssPrefix = defineProcessor(() => {
     const idMap = new Map()
     const classMap = new Map()
 
-    // Step 1: Process all IDs in the SVG.
+    // Step 1: First scan all CSS for ID and class names to ensure we catch all
+    // selectors even if they're not used in the DOM
+    const styleTags = svg.querySelectorAll('style')
+    styleTags.forEach((styleTag) => {
+      const cssText = styleTag.textContent || ''
+
+      // Match all #id selectors in CSS
+      const idRegex = /#([a-zA-Z0-9_-]+)(?=[\s,.:{[\]|$])/g
+      let idMatch
+      while ((idMatch = idRegex.exec(cssText)) !== null) {
+        const idName = idMatch[1]
+        if (!idMap.has(idName)) {
+          idMap.set(idName, PREFIX + idName)
+        }
+      }
+
+      // Match all .class-name selectors in CSS
+      const classRegex = /\.([a-zA-Z0-9_-]+)(?=[\s,.:{[\]|$])/g
+      let classMatch
+      while ((classMatch = classRegex.exec(cssText)) !== null) {
+        const className = classMatch[1]
+        if (!classMap.has(className)) {
+          classMap.set(className, PREFIX + className)
+        }
+      }
+
+      // Match all url(#id) references in CSS with various formats
+      // This regex handles: url(#id), url("#id"), url('#id'), url( #id ), etc.
+      const urlRegex = /url\(\s*['"]?#([^'")]+)['"]?\s*\)/g
+      let urlMatch
+      while ((urlMatch = urlRegex.exec(cssText)) !== null) {
+        const idName = urlMatch[1]
+        if (!idMap.has(idName)) {
+          idMap.set(idName, PREFIX + idName)
+        }
+      }
+    })
+
+    // Step 2: Process all IDs in the SVG.
     const elementsWithId = svg.querySelectorAll('[id]')
     elementsWithId.forEach((el) => {
       const originalId = el.getAttribute('id')
-      const newId = PREFIX + originalId
-      idMap.set(originalId, newId)
-      el.setAttribute('id', newId)
+      if (!idMap.has(originalId)) {
+        idMap.set(originalId, PREFIX + originalId)
+      }
+      el.setAttribute('id', idMap.get(originalId))
     })
 
-    // Step 2: Process all class names in the SVG.
+    // Step 3: Process all class names in the SVG.
     const elementsWithClass = svg.querySelectorAll('[class]')
     elementsWithClass.forEach((el) => {
       const originalClassStr = el.getAttribute('class') || ''
@@ -37,8 +76,7 @@ export const cssPrefix = defineProcessor(() => {
       el.setAttribute('class', newClassNames.join(' '))
     })
 
-    // Step 3: Update CSS selectors in style tags.
-    const styleTags = svg.querySelectorAll('style')
+    // Step 4: Update CSS selectors in style tags.
     styleTags.forEach((styleTag) => {
       let cssText = styleTag.textContent
 
@@ -48,9 +86,25 @@ export const cssPrefix = defineProcessor(() => {
         const idRegex = new RegExp(`#${originalId}(?=[\\s,.:{\\[]|$)`, 'g')
         cssText = cssText.replace(idRegex, `#${newId}`)
 
-        // Match url(#id) references.
-        const urlRegex = new RegExp(`url\\(#${originalId}\\)`, 'g')
-        cssText = cssText.replace(urlRegex, `url(#${newId})`)
+        // Match url(#id) references with various formats
+        // This handles: url(#id), url("#id"), url('#id'), url( #id ), etc.
+        const urlWithoutQuotesRegex = new RegExp(
+          `(url\\(\\s*)#${originalId}(\\s*\\))`,
+          'g',
+        )
+        cssText = cssText.replace(urlWithoutQuotesRegex, `$1#${newId}$2`)
+
+        const urlWithDoubleQuotesRegex = new RegExp(
+          `(url\\(\\s*")#${originalId}("\\s*\\))`,
+          'g',
+        )
+        cssText = cssText.replace(urlWithDoubleQuotesRegex, `$1#${newId}$2`)
+
+        const urlWithSingleQuotesRegex = new RegExp(
+          `(url\\(\\s*')#${originalId}('\\s*\\))`,
+          'g',
+        )
+        cssText = cssText.replace(urlWithSingleQuotesRegex, `$1#${newId}$2`)
       })
 
       // Replace class references in CSS.
@@ -66,13 +120,11 @@ export const cssPrefix = defineProcessor(() => {
       styleTag.textContent = cssText
     })
 
-    // Step 4: Update ID references in attributes like href, fill, etc.
+    // Step 5: Update ID references in attributes like href, fill, etc.
     const allElements = svg.querySelectorAll('*')
     allElements.forEach((el) => {
       // Process all attributes that might reference IDs.
-      Object.entries(el.attributes).forEach((attr) => {
-        const [name, value] = attr
-
+      Object.entries(el.attributes).forEach(([name, value]) => {
         // Skip id and class attributes as they've already been processed.
         if (name === 'id' || name === 'class') return
 
@@ -80,17 +132,22 @@ export const cssPrefix = defineProcessor(() => {
         let modified = false
 
         // Handle url(#id) references (used in fill, stroke, filter, etc.).
-        const urlMatches = value.match(/url\(#([^)]+)\)/g)
+        const urlMatches = value.match(/url\(\s*['"]?#([^'")]+)['"]?\s*\)/g)
         if (urlMatches) {
           urlMatches.forEach((match) => {
-            // Extract id from url(#id).
-            const idValue = match.substring(5, match.length - 1)
-            if (idMap.has(idValue)) {
-              newValue = newValue.replace(
-                `url(#${idValue})`,
-                `url(#${idMap.get(idValue)})`,
-              )
-              modified = true
+            // Extract id from url(#id) with various formats
+            const idMatch = match.match(/url\(\s*['"]?#([^'")]+)['"]?\s*\)/)
+            if (idMatch && idMatch[1]) {
+              const idValue = idMatch[1]
+              if (idMap.has(idValue)) {
+                // Keep the same format (quotes, spaces) but replace the ID
+                const replacedUrl = match.replace(
+                  `#${idValue}`,
+                  `#${idMap.get(idValue)}`,
+                )
+                newValue = newValue.replace(match, replacedUrl)
+                modified = true
+              }
             }
           })
         }
