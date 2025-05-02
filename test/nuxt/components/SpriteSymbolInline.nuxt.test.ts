@@ -11,8 +11,8 @@ const runtimeMock = vi.hoisted(() => ({
 
 vi.mock('#nuxt-svg-icon-sprite/runtime', () => runtimeMock)
 
-// Mock the SYMBOL_IMPORTS
-const SYMBOL_IMPORTS_MOCK = vi.hoisted(() => ({
+// Mock symbolImports.
+const symbolImports = vi.hoisted(() => ({
   'valid-symbol': {
     attributes: {
       viewBox: '0 0 24 24',
@@ -42,7 +42,7 @@ const SYMBOL_IMPORTS_MOCK = vi.hoisted(() => ({
 }))
 
 vi.mock('#nuxt-svg-icon-sprite/symbol-import', () => ({
-  SYMBOL_IMPORTS: SYMBOL_IMPORTS_MOCK,
+  symbolImports,
 }))
 
 describe('SymbolInline', () => {
@@ -125,7 +125,7 @@ describe('SymbolInline', () => {
   it('does not include id attribute from the imported symbol', async () => {
     // Add a symbol with an id attribute that should be removed.
     // @ts-ignore
-    SYMBOL_IMPORTS_MOCK['with-id'] = {
+    symbolImports['with-id'] = {
       attributes: {
         viewBox: '0 0 24 24',
         width: '24',

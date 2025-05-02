@@ -17,7 +17,7 @@ export default defineNuxtModule<ModuleOptions>({
     name: 'nuxt-svg-icon-sprite',
     configKey: 'svgIconSprite',
     compatibility: {
-      nuxt: '^3.15.0',
+      nuxt: '^3.17.0',
     },
   },
   defaults: {
@@ -36,7 +36,6 @@ export default defineNuxtModule<ModuleOptions>({
     helper.addComponent('SpriteSymbolInline')
 
     const collector = new Collector(helper)
-
     await collector.init()
 
     if (helper.isDev) {
@@ -89,6 +88,9 @@ export default defineNuxtModule<ModuleOptions>({
     })
 
     addServerTemplate({
+      // In Nitro, this file is imported using this alias.
+      // Since this is a virtual file, the filename must be the alias,
+      // not the path!
       filename: '#nuxt-svg-icon-sprite/runtime',
       getContents: () => collector.getTemplate('runtime'),
     })

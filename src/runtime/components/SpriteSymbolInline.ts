@@ -1,7 +1,7 @@
 import { defineComponent, type PropType, h } from 'vue'
 import type { NuxtSvgSpriteSymbol } from '#nuxt-svg-icon-sprite/runtime'
 import { runtimeOptions } from '#nuxt-svg-icon-sprite/runtime'
-import { SYMBOL_IMPORTS } from '#nuxt-svg-icon-sprite/symbol-import'
+import { symbolImports } from '#nuxt-svg-icon-sprite/symbol-import'
 import { getSymbolNameParts } from '../helpers'
 
 const SymbolInline = defineComponent({
@@ -13,7 +13,7 @@ const SymbolInline = defineComponent({
   },
   async setup(props) {
     const { symbol } = getSymbolNameParts(props.name)
-    const symbolImport = SYMBOL_IMPORTS[props.name]
+    const symbolImport = symbolImports[props.name]
 
     // Invalid symbol name.
     if (!symbolImport) {

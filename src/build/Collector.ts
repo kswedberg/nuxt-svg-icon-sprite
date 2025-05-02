@@ -39,7 +39,7 @@ export class Collector {
   }
 
   private setTemplate(key: Template, contents: string) {
-    this.templates.set(key, contents)
+    this.templates.set(key, contents.trim())
   }
 
   public async updateTemplates() {
@@ -149,7 +149,7 @@ declare module '#nuxt-svg-icon-sprite/runtime' {
     this.setTemplate(
       'symbol-import',
       `
-export const SYMBOL_IMPORTS = {
+export const symbolImports = {
   ${imports.sort().join(',\n  ')}
 }
 `,
@@ -168,7 +168,7 @@ declare module '#nuxt-svg-icon-sprite/symbol-import' {
 
   type SymbolImportDynamic = () => Promise<SymbolImport>
 
-  export const SYMBOL_IMPORTS: Record<NuxtSvgSpriteSymbol, SymbolImport | SymbolImportDynamic>
+  export const symbolImports: Record<NuxtSvgSpriteSymbol, SymbolImport | SymbolImportDynamic>
 }
 `,
     )
