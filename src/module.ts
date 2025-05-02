@@ -71,7 +71,6 @@ export default defineNuxtModule<ModuleOptions>({
               sprite.getPrefix() +
               processed.symbol.id +
               '.js',
-            write: true,
             getContents: () => {
               const symbol = {
                 content: processed.processed.symbolDom,

@@ -13,22 +13,26 @@
     </div>
 
     <!-- Test reactivity. -->
-    <SpriteSymbol
-      :name="current"
-      width="128"
-      height="128"
-      class="text-green-600"
-      fill="currentColor"
-    />
+    <div class="size-[128px]">
+      <SpriteSymbol
+        :name="current"
+        width="128"
+        height="128"
+        class="text-green-600"
+        fill="currentColor"
+      />
+    </div>
 
     <!-- Test inlining. -->
-    <SpriteSymbolInline
-      :name="current"
-      width="128"
-      height="128"
-      class="text-green-600"
-      fill="currentColor"
-    />
+    <div class="size-[128px]">
+      <SpriteSymbolInline
+        :name="current"
+        width="128"
+        height="128"
+        class="text-green-600"
+        fill="currentColor"
+      />
+    </div>
 
     {{ current }}
   </div>
