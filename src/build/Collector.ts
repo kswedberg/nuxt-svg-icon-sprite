@@ -1,6 +1,12 @@
 import type { ModuleContext, SpriteConfig } from './types'
 import { Sprite } from './Sprite'
 
+type Template =
+  | 'runtime'
+  | 'runtime-types'
+  | 'symbol-import'
+  | 'symbol-import-types'
+
 function anyChanged(results: boolean[]): boolean {
   return results.some((v) => v === true)
 }
@@ -8,6 +14,7 @@ function anyChanged(results: boolean[]): boolean {
 export class Collector {
   sprites: Sprite[]
   context: ModuleContext
+  templates = new Map<Template, string>()
 
   constructor(
     spritesConfig: Record<string, SpriteConfig>,
@@ -19,11 +26,25 @@ export class Collector {
     this.context = context
   }
 
-  async init(): Promise<void> {
-    await Promise.all(this.sprites.map((sprite) => sprite.init()))
+  public getTemplate(key: Template): string {
+    const contents = this.templates.get(key)
+    if (contents === undefined) {
+      throw new Error(`Invalid template key: "${key}"`)
+    }
+
+    return contents
   }
 
-  async getRuntimeTemplate() {
+  async init(): Promise<void> {
+    await Promise.all(this.sprites.map((sprite) => sprite.init()))
+    await this.updateTemplates()
+  }
+
+  private setTemplate(key: Template, contents: string) {
+    this.templates.set(key, contents)
+  }
+
+  public async updateTemplates() {
     const fileNames: Record<string, string> = {}
     const allSymbols: string[] = []
 
@@ -44,28 +65,24 @@ export class Collector {
       }
     }
 
-    return `
+    allSymbols.sort()
+
+    this.setTemplate(
+      'runtime',
+      `
 export const isServer = import.meta.server
 export const spritePaths = Object.freeze(${JSON.stringify(fileNames, null, 2)})
 export const runtimeOptions = Object.freeze(${JSON.stringify(this.context.runtimeOptions)})
-export const allSymbolNames = Object.freeze(${JSON.stringify(allSymbols.sort(), null, 2)})
-`
-  }
+export const allSymbolNames = Object.freeze(${JSON.stringify(allSymbols, null, 2)})
+`,
+    )
 
-  async getRuntimeTypeTemplate() {
-    const allSymbols: string[] = []
+    const NuxtSvgSpriteSymbol =
+      allSymbols.map((v) => `"${v}"`).join('\n    | ') || 'string'
 
-    for (const sprite of this.sprites) {
-      const prefix = sprite.name === 'default' ? '' : sprite.name + '/'
-      const processed = await sprite.getProcessedSymbols()
-      for (const v of processed) {
-        allSymbols.push(JSON.stringify(prefix + v.symbol.id))
-      }
-    }
-
-    const NuxtSvgSpriteSymbol = allSymbols.sort().join('\n    | ') || 'string'
-
-    return `
+    this.setTemplate(
+      'runtime-types',
+      `
 declare module '#nuxt-svg-icon-sprite/runtime' {
   /**
    * Keys of all generated SVG sprite symbols.
@@ -99,10 +116,10 @@ declare module '#nuxt-svg-icon-sprite/runtime' {
    * An array of all symbol names.
    */
   export const allSymbolNames: Readonly<NuxtSvgSpriteSymbol[]>;
-}`
-  }
+}
+`,
+    )
 
-  async buildSymbolImportTemplate() {
     const imports: string[] = []
 
     for (const sprite of this.sprites) {
@@ -127,13 +144,19 @@ declare module '#nuxt-svg-icon-sprite/runtime' {
       }
     }
 
-    return `export const SYMBOL_IMPORTS = {
+    this.setTemplate(
+      'symbol-import',
+      `
+export const SYMBOL_IMPORTS = {
   ${imports.sort().join(',\n  ')}
-}`
-  }
+}
+`,
+    )
 
-  buildSymbolImportTypeTemplate() {
-    return `declare module '#nuxt-svg-icon-sprite/symbol-import' {
+    this.setTemplate(
+      'symbol-import-types',
+      `
+declare module '#nuxt-svg-icon-sprite/symbol-import' {
   import type { NuxtSvgSpriteSymbol } from './runtime'
 
   type SymbolImport = {
@@ -144,7 +167,9 @@ declare module '#nuxt-svg-icon-sprite/runtime' {
   type SymbolImportDynamic = () => Promise<SymbolImport>
 
   export const SYMBOL_IMPORTS: Record<NuxtSvgSpriteSymbol, SymbolImport | SymbolImportDynamic>
-}`
+}
+`,
+    )
   }
 
   /**

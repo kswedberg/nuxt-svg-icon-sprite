@@ -6,6 +6,7 @@ import {
   addTypeTemplate,
   addDevServerHandler,
   addImports,
+  addServerTemplate,
 } from '@nuxt/kit'
 import { createDevServerHandler } from './build/devServerHandler'
 import { joinURL, withLeadingSlash, withTrailingSlash } from 'ufo'
@@ -153,25 +154,30 @@ export default defineNuxtModule<ModuleOptions>({
     // sprite.
     nuxt.options.alias['#nuxt-svg-icon-sprite/runtime'] = addTemplate({
       filename: 'nuxt-svg-icon-sprite/runtime.js',
-      getContents: () => collector.getRuntimeTemplate(),
+      getContents: () => collector.getTemplate('runtime'),
     }).dst
+
+    addServerTemplate({
+      filename: '#nuxt-svg-icon-sprite/runtime',
+      getContents: () => collector.getTemplate('runtime'),
+    })
 
     addTypeTemplate({
       filename: 'nuxt-svg-icon-sprite/runtime.d.ts',
       write: true,
-      getContents: () => collector.getRuntimeTypeTemplate(),
+      getContents: () => collector.getTemplate('runtime-types'),
     })
 
     // Contains the imports for all symbols.
     nuxt.options.alias['#nuxt-svg-icon-sprite/symbol-import'] = addTemplate({
       filename: 'nuxt-svg-icon-sprite/symbol-import.js',
-      getContents: () => collector.buildSymbolImportTemplate(),
+      getContents: () => collector.getTemplate('symbol-import'),
     }).dst
 
     addTypeTemplate({
       filename: 'nuxt-svg-icon-sprite/symbol-import.d.ts',
       write: true,
-      getContents: () => collector.buildSymbolImportTypeTemplate(),
+      getContents: () => collector.getTemplate('symbol-import-types'),
     })
 
     nuxt.hook('builder:watch', async (event, providedPath) => {
@@ -183,6 +189,7 @@ export default defineNuxtModule<ModuleOptions>({
         : srcResolver.resolve(providedPath)
 
       let hasChanged = false
+
       if (event === 'add' && isSvgFile) {
         hasChanged = await collector.handleAdd(path)
       } else if (event === 'change' && isSvgFile) {
@@ -193,6 +200,10 @@ export default defineNuxtModule<ModuleOptions>({
         hasChanged = await collector.handleAddDir()
       } else if (event === 'unlinkDir') {
         hasChanged = await collector.handleUnlinkDir(path)
+      }
+
+      if (hasChanged) {
+        await collector.updateTemplates()
       }
     })
   },
