@@ -1,13 +1,16 @@
-import type { SpriteSymbolProcessor } from './build/types'
+import type { Processor } from './build/types'
 
-function defineProcessor<
+/**
+ * Define a processor.
+ */
+export function defineProcessor<
   T extends object,
-  HasOptions = object extends T ? true : false,
+  OptionsOptional = object extends T ? true : false,
 >(
-  processor: (options?: T) => SpriteSymbolProcessor,
-): HasOptions extends true
-  ? (options?: T) => SpriteSymbolProcessor
-  : (options: T) => SpriteSymbolProcessor {
+  processor: (options?: T) => Processor,
+): OptionsOptional extends true
+  ? (options?: T) => Processor
+  : (options: T) => Processor {
   return processor
 }
 

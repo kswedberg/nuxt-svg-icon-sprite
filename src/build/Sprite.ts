@@ -2,7 +2,7 @@ import { hash } from 'ohash'
 import { HTMLElement } from 'node-html-parser'
 import { resolveFiles, resolvePath } from '@nuxt/kit'
 import { logger } from './utils'
-import type { ModuleContext, SpriteConfig } from './types'
+import type { ModuleContext, Processor, SpriteConfig } from './types'
 import { SpriteSymbol, type SpriteSymbolProcessed } from './SpriteSymbol'
 
 export class Sprite {
@@ -36,10 +36,20 @@ export class Sprite {
    */
   hash: string | null = null
 
+  private processors: Processor[]
+
   constructor(name: string, config: SpriteConfig, context: ModuleContext) {
     this.name = name
     this.config = config
     this.context = context
+
+    if (config.processSprite) {
+      this.processors = Array.isArray(config.processSprite)
+        ? config.processSprite
+        : [config.processSprite]
+    } else {
+      this.processors = []
+    }
   }
 
   /**
@@ -141,9 +151,9 @@ export class Sprite {
 
       svg.appendChild(defs)
 
-      if (this.config.processSprite) {
-        await this.config.processSprite(svg, {
-          name: this.name,
+      for (const processor of this.processors) {
+        await processor(svg, {
+          id: this.name,
         })
       }
 

@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { promises as fs } from 'node:fs'
 import { parse } from 'node-html-parser'
-import type { SpriteConfig, SpriteSymbolProcessor } from './types'
+import type { SpriteConfig, Processor } from './types'
 import { logger } from './utils'
 
 /**
@@ -17,7 +17,7 @@ export class SpriteSymbol {
   filePath: string
   id: string
   processed: Promise<SpriteSymbolProcessed | null> | null = null
-  processors: SpriteSymbolProcessor[]
+  processors: Processor[]
 
   constructor(filePath: string, config: SpriteConfig) {
     this.id = path.parse(filePath).name

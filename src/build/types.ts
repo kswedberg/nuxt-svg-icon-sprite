@@ -1,9 +1,14 @@
 import type { Resolver } from '@nuxt/kit'
 import type { HTMLElement } from 'node-html-parser'
 
-export type SpriteSymbolProcessor = (
-  symbol: HTMLElement,
-  context: { id: string; filePath: string },
+export type ProcessorContext = {
+  id: string
+  filePath?: string
+}
+
+export type Processor = (
+  element: HTMLElement,
+  context: ProcessorContext,
 ) => void | Promise<void>
 
 export type SpriteConfig = {
@@ -23,15 +28,12 @@ export type SpriteConfig = {
   /**
    * Process the parsed SVG symbol.
    */
-  processSpriteSymbol?: SpriteSymbolProcessor | SpriteSymbolProcessor[]
+  processSpriteSymbol?: Processor | Processor[]
 
   /**
    * Process the finished sprite right before it's saved.
    */
-  processSprite?: (
-    sprite: HTMLElement,
-    context: { name: string },
-  ) => void | Promise<void>
+  processSprite?: Processor | Processor[]
 }
 
 export type RuntimeOptions = {

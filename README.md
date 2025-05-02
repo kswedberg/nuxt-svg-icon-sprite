@@ -243,7 +243,7 @@ export default defineNuxtConfig({
             })
           })
         },
-        processSprite(sprite: HTMLElement, name) {
+        processSprite(sprite, ctx) {
           // Executed for each sprite right before its saved.
           // Run SVGO or whatever you like.
           // Markup contains:
@@ -251,7 +251,7 @@ export default defineNuxtConfig({
           //   <symbol id="user">...</symbol>
           //   <symbol id="foobar">...</symbol>
           // </svg>
-          return markup
+          // You can directly manipulate the `sprite` object.
         },
       },
     },
