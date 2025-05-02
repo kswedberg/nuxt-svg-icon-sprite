@@ -1,7 +1,7 @@
 import { defineComponent, h } from 'vue'
 import { useHead } from '#imports'
 import {
-  SPRITE_PATHS,
+  spritePaths,
   runtimeOptions,
   isServer,
   type NuxtSvgSpriteSymbol,
@@ -40,7 +40,7 @@ export default defineComponent<Props>({
   setup(props) {
     if (isServer) {
       const { sprite } = getSymbolNameParts(props.name)
-      const href = SPRITE_PATHS[sprite]
+      const href = spritePaths[sprite]
       if (href) {
         useHead({
           link: [
@@ -61,7 +61,7 @@ export default defineComponent<Props>({
 
       // Create the <use> tag.
       const symbolDom = h('use', {
-        href: SPRITE_PATHS[sprite] + '#' + symbol,
+        href: spritePaths[sprite] + '#' + symbol,
       })
 
       return props.noWrapper

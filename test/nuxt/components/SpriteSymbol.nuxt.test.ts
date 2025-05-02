@@ -9,7 +9,7 @@ const { useHeadMock } = vi.hoisted(() => ({
 mockNuxtImport('useHead', () => useHeadMock)
 
 const runtimeMock = vi.hoisted(() => ({
-  SPRITE_PATHS: {
+  spritePaths: {
     default: '/sprite-default.svg',
     special: '/sprite-special.svg',
   },
