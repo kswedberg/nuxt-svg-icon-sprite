@@ -29,7 +29,7 @@ export const forceCurrentColor = defineProcessor<{
 
       colorAttributes.forEach((attribute) => {
         const value = element.getAttribute(attribute)
-        if (value) {
+        if (value && value !== 'transparent' && value !== 'none') {
           element.setAttribute(attribute, 'currentColor')
         }
       })
