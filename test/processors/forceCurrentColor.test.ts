@@ -205,4 +205,22 @@ describe('forceCurrentColor', () => {
     `,
     )
   })
+
+  it('should not replace "transparent" or "none" colors', async () => {
+    const processor = forceCurrentColor()
+    expect(
+      await testProcessor(
+        '<svg><rect stroke="none" /><circle fill="transparent" /></svg>',
+        processor,
+      ),
+    ).toMatchInlineSnapshot(
+      `
+      "<svg>
+        <rect stroke="none"></rect>
+        <circle fill="transparent"></circle>
+      </svg>
+      "
+    `,
+    )
+  })
 })
