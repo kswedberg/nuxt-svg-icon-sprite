@@ -4,12 +4,13 @@ An easy and performant way to use SVG icons in your Nuxt 3 app.
 
 Automatically creates
 [SVG `<symbol>` sprites](https://www.sitepoint.com/use-svg-image-sprites/)
-during the build and provides components and composables to use symbols.
+during the build and provides components and composables to use these icons.
 
 - Aggregate all SVG files into one or more sprite files
 - Reduce bundle size and SSR-rendered page size
 - Full HMR support
 - Provides `<SpriteSymbol>` component to render `<svg>` with `<use>`
+- Provides `<SpriteSymbolInline>` component to inline the SVG
 - Loads the sprite.svg from URL (/\_nuxt/sprite.svg)
 - TypeScript type checking for available symbols
 
@@ -176,9 +177,36 @@ This processor will replace all `fill` and `stroke` attribute values with
 `currentColor`. If you still want to keep some stroke or fill attributes, you
 can add a `data-keep-color` attribute on them - those will then be skipped.
 
+### cssPrefix() (Experimental)
+
+Prefixes all IDs and classes in a SVG, including `<style>` selectors. Note that
+it does not prefix other selectors (e.g. `path {}`) - these will be shared for
+all symbols in the sprite!
+
+### removeTags()
+
+Removes the given tags. For example, to remove all `<title>` tags from the SVG:
+
+```typescript
+import { removeTags } from 'nuxt-svg-icon-sprite/processors'
+
+export default defineNuxtConfig({
+  modules: ['nuxt-svg-icon-sprite'],
+
+  svgIconSprite: {
+    sprites: {
+      default: {
+        importPatterns: ['./assets/icons/**/*.svg'],
+        processSpriteSymbol: [removeTags({ tags: ['title'] })],
+      },
+    },
+  },
+})
+```
+
 ### Custom Processors
 
-You can also provide your own processors:
+You can also provide your own processors as inline methods:
 
 ```typescript
 import { removeSizes, forceCurrentColor } from 'nuxt-svg-icon-sprite/processors'
