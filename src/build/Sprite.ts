@@ -55,12 +55,12 @@ export class Sprite {
   /**
    * Reset the generated sprite.
    */
-  reset() {
+  public reset() {
     this.generatedSprite = null
     this.hash = null
   }
 
-  async getSpriteFileName() {
+  public async getSpriteFileName() {
     const { hash } = await this.getSprite()
     return `nuxt-svg-icon-sprite/sprite-${this.name}.${hash}.svg`
   }
@@ -76,11 +76,11 @@ export class Sprite {
     return Promise.resolve([])
   }
 
-  getPrefix() {
+  public getPrefix() {
     return this.name === 'default' ? '' : this.name + '/'
   }
 
-  async getProcessedSymbols(): Promise<
+  public async getProcessedSymbols(): Promise<
     { symbol: SpriteSymbol; processed: SpriteSymbolProcessed }[]
   > {
     const processedSymbols: {
@@ -105,7 +105,7 @@ export class Sprite {
   /**
    * Initialise the sprite with all symbols in the configured import patterns.
    */
-  async init() {
+  public async init() {
     const autoFiles = await this.getImportPatternFiles()
     autoFiles.forEach((filePath) => {
       this.symbols.push(new SpriteSymbol(filePath, this.config))
@@ -128,7 +128,7 @@ export class Sprite {
     }
   }
 
-  async getSprite(): Promise<{ hash: string; content: string }> {
+  public async getSprite(): Promise<{ hash: string; content: string }> {
     if (!this.generatedSprite || !this.hash) {
       const svg = new HTMLElement('svg', {})
       svg.setAttributes({
@@ -169,7 +169,7 @@ export class Sprite {
     }
   }
 
-  async handleAdd(path: string): Promise<void> {
+  public async handleAdd(path: string): Promise<void> {
     if (this.config.importPatterns) {
       const allFiles = await this.getImportPatternFiles()
       if (allFiles.includes(path)) {
@@ -179,7 +179,7 @@ export class Sprite {
     }
   }
 
-  handleChange(path: string): Promise<void> {
+  public handleChange(path: string): Promise<void> {
     const match = this.symbols.find((v) => v.filePath === path)
     if (match) {
       match.reset()
@@ -188,7 +188,7 @@ export class Sprite {
     return Promise.resolve()
   }
 
-  handleUnlink(path: string): Promise<void> {
+  public handleUnlink(path: string): Promise<void> {
     const match = this.symbols.find((v) => v.filePath === path)
     if (match) {
       this.symbols = this.symbols.filter((v) => v.id !== match.id)
@@ -198,7 +198,7 @@ export class Sprite {
     return Promise.resolve()
   }
 
-  async handleAddDir(): Promise<void> {
+  public async handleAddDir(): Promise<void> {
     const importPatternFiles = await this.getImportPatternFiles()
     const existingFilePaths = this.symbols.map((v) => v.filePath)
 
@@ -216,13 +216,13 @@ export class Sprite {
     }
   }
 
-  handleUnlinkDir(folderPath: string): Promise<void> {
+  public handleUnlinkDir(folderPath: string): Promise<void> {
     // Find symbols that contain the removed folder path.
     const toRemove = this.symbols
       .filter((v) => v.filePath.includes(folderPath))
       .map((v) => v.filePath)
     if (toRemove.length) {
-      this.symbols = this.symbols.filter((v) => toRemove.includes(v.filePath))
+      this.symbols = this.symbols.filter((v) => !toRemove.includes(v.filePath))
       this.reset()
     }
     return Promise.resolve()
