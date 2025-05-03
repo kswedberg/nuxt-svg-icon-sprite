@@ -35,15 +35,17 @@ export default defineNuxtModule<ModuleOptions>({
     helper.addComponent('SpriteSymbol', 'index', 'all')
 
     if (helper.isDev) {
-      // During dev mode, always use the "server" component for inlining.
-      // It will import the symbols directly.
+      // During dev mode, use the "dev" component for inlining.
+      // It will import the symbols directly, but wrap it so it remains
+      // reactive on the client.
       helper.addComponent('SpriteSymbolInline', 'dev', 'all')
     } else {
       // For the build, on the server we use the component that imports
-      // the symbols directly.
+      // the symbols directly and doesn't wrap it, because it doesn't have
+      // to be reactive.
       helper.addComponent('SpriteSymbolInline', 'server', 'server')
       // On the client, we use the component that uses dynamic imports
-      // to load the symbols.
+      // to load the symbols and wraps them so that it's reactive.
       helper.addComponent('SpriteSymbolInline', 'client', 'client')
     }
 

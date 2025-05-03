@@ -13,6 +13,9 @@ type SpriteData = {
   spritePaths: Readonly<Record<string, string>>
 }
 
+/**
+ * Use data about the generated sprite symbols.
+ */
 export function useSpriteData(): SpriteData {
   return { symbols: allSymbolNames, spritePaths }
 }
