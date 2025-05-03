@@ -25,7 +25,3 @@ export default defineComponent<Props>({
     return svg(symbol, symbolImport.attributes, symbolImport.content)
   },
 })
-
-if (import.meta.hot) {
-  import.meta.hot.accept()
-}

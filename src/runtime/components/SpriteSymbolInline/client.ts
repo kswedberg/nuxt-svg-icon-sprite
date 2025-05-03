@@ -34,7 +34,7 @@ export default defineComponent<Props>({
       required: true,
     },
   },
-  async setup(props) {
+  setup(props) {
     return () => {
       // Wrapping makes sure that it's reactive.
       return h(SymbolInline, { name: props.name, key: props.name })

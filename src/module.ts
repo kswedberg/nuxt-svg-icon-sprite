@@ -33,10 +33,11 @@ export default defineNuxtModule<ModuleOptions>({
     helper.addComposable('useSpriteData')
 
     helper.addComponent('SpriteSymbol', 'index', 'all')
+
     if (helper.isDev) {
       // During dev mode, always use the "server" component for inlining.
       // It will import the symbols directly.
-      helper.addComponent('SpriteSymbolInline', 'server', 'all')
+      helper.addComponent('SpriteSymbolInline', 'dev', 'all')
     } else {
       // For the build, on the server we use the component that imports
       // the symbols directly.
