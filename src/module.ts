@@ -17,7 +17,7 @@ export default defineNuxtModule<ModuleOptions>({
     name: 'nuxt-svg-icon-sprite',
     configKey: 'svgIconSprite',
     compatibility: {
-      nuxt: '^3.17.0',
+      nuxt: '>=3.17.0',
     },
   },
   defaults: {
