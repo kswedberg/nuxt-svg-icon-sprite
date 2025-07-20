@@ -5,7 +5,7 @@ import {
   resolveAlias,
   type Resolver,
 } from '@nuxt/kit'
-import { joinURL, withLeadingSlash, withTrailingSlash } from 'ufo'
+import { withLeadingSlash, withTrailingSlash } from 'ufo'
 import type { Component, Nuxt } from 'nuxt/schema'
 import type { ModuleOptions } from './types'
 import { defu } from 'defu'
