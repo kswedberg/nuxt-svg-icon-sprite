@@ -155,12 +155,7 @@ export class ModuleHelper {
       srcDir: nuxt.options.srcDir,
       moduleBuildDir: nuxt.options.buildDir + '/nuxt-svg-icon-sprite',
       buildAssetsDir: withLeadingSlash(
-        withTrailingSlash(
-          joinURL(
-            nuxt.options.app.baseURL.replace(/^\.\//, '/') || '/',
-            nuxt.options.app.buildAssetsDir,
-          ),
-        ),
+        withTrailingSlash(nuxt.options.app.buildAssetsDir),
       ),
     }
   }
