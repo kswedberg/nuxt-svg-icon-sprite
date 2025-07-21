@@ -14,7 +14,7 @@ export type { ModuleOptions }
 
 export default defineNuxtModule<ModuleOptions>({
   meta: {
-    name: 'nuxt-svg-icon-sprite',
+    name: 'nuxt-svg-symbol-sprite',
     configKey: 'svgIconSprite',
     compatibility: {
       nuxt: '>=3.17.0',
