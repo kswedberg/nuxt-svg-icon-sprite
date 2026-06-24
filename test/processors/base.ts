@@ -1,5 +1,5 @@
 import { parse } from 'node-html-parser'
-import type { Processor } from '~/src/build/types'
+import type { Processor } from '~~/src/build/types'
 import * as prettier from 'prettier'
 
 function format(v: string): Promise<string> {

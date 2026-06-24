@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mockNuxtImport, mountSuspended } from '@nuxt/test-utils/runtime'
-import SpriteSymbol from '~/src/runtime/components/SpriteSymbol'
+import SpriteSymbol from '~~/src/runtime/components/SpriteSymbol'
 
 const { useHeadMock } = vi.hoisted(() => ({
   useHeadMock: vi.fn(),

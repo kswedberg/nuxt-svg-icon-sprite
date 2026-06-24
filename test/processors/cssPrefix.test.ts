@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { testProcessor } from './base'
-import { cssPrefix } from '~/src/processors/cssPrefix'
+import { cssPrefix } from '~~/src/processors/cssPrefix'
 
 describe('cssPrefix', () => {
   // Create a mock context with an id

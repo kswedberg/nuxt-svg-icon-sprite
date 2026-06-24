@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { toValidId } from '~/src/build/utils'
+import { toValidId } from '~~/src/build/utils'
 
 describe('toValidId', () => {
   it('returns the same string if already valid', () => {

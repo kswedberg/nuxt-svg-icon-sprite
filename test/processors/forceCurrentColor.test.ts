@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { testProcessor } from './base'
-import { forceCurrentColor } from '~/src/processors/forceCurrentColor'
+import { forceCurrentColor } from '~~/src/processors/forceCurrentColor'
 
 describe('forceCurrentColor', () => {
   it('should replace stroke and fill colors with currentColor', async () => {

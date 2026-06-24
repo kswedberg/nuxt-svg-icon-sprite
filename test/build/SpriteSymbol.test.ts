@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { SpriteSymbol } from '~/src/build/SpriteSymbol'
+import { SpriteSymbol } from '~~/src/build/SpriteSymbol'
 import { parse } from 'node-html-parser'
 import path from 'node:path'
 import { promises as fs } from 'node:fs'

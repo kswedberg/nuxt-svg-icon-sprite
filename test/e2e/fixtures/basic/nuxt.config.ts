@@ -4,7 +4,7 @@ import Module, { type ModuleOptions } from './../../../../src/module'
 const svgIconSprite: ModuleOptions = {
   sprites: {
     default: {
-      importPatterns: ['./assets/symbols/**/*.svg'],
+      importPatterns: ['./app/assets/symbols/**/*.svg'],
       processSpriteSymbol: (svg, ctx) => {
         if (ctx.id === 'account') {
           svg.setAttribute('data-attribute-from-symbol-processor', 'is-svg')
@@ -22,7 +22,7 @@ const svgIconSprite: ModuleOptions = {
       },
     },
     special: {
-      importPatterns: ['./assets/symbols-special/**/*.svg'],
+      importPatterns: ['./app/assets/symbols-special/**/*.svg'],
       processSpriteSymbol: (svg, ctx) => {
         if (ctx.id === 'cog') {
           const path = svg.querySelector('path')

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { testProcessor } from './base'
-import { removeSizes } from '~/src/processors/removeSizes'
+import { removeSizes } from '~~/src/processors/removeSizes'
 
 describe('removeSizes', () => {
   const processor = removeSizes()

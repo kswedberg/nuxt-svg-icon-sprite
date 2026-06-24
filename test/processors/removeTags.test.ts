@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { testProcessor } from './base'
-import { removeTags } from '~/src/processors/removeTags'
+import { removeTags } from '~~/src/processors/removeTags'
 
 describe('removeTags', () => {
   it('should remove a single tag type', async () => {

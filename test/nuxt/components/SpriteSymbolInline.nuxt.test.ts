@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mountSuspended } from '@nuxt/test-utils/runtime'
-import SpriteSymbolInline from '~/src/runtime/components/SpriteSymbolInline/client'
+import SpriteSymbolInline from '~~/src/runtime/components/SpriteSymbolInline/client'
 
 // Mock the runtime options
 const runtimeMock = vi.hoisted(() => ({
