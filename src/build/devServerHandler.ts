@@ -20,8 +20,8 @@ export function createDevServerHandler(collector: Collector) {
     setResponseHeader(event, 'Cache-Control', 'max-age=100000')
 
     const url = getRequestURL(event)
-    const fileName = url.pathname.split('/').slice(-1)[0]
-    const [_prefix, spriteName, _hash, _extension] = fileName.split('.')
+    const fileName = url.pathname.split('/').slice(-1)?.[0] ?? ''
+    const [_prefix, spriteName, _hash, _extension] = fileName.split('.') ?? []
 
     const sprite = collector.sprites.find((v) => v.name === spriteName)
     if (!sprite) {

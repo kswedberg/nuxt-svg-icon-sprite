@@ -29,7 +29,7 @@ export default defineNuxtConfig({
   svgIconSprite: {
     sprites: {
       default: {
-        importPatterns: ['./assets/icons/**/*.svg'],
+        importPatterns: ['./app/assets/icons/**/*.svg'],
       },
     },
   },
@@ -39,11 +39,11 @@ export default defineNuxtConfig({
 ## Usage
 
 Place the icons in the folder defined in `nuxt.config.ts`. By default, it's
-`./assets/icons`. The name of the SVG file determines the symbol name.
+`./app/assets/icons`. The name of the SVG file determines the symbol name.
 
 **NOTE: Each symbol in a sprite must have a unique name!**
 
-So, if you have a file in `./assets/icons/user.svg`, the sprite will contain a
+So, if you have a file in `./app/assets/icons/user.svg`, the sprite will contain a
 `<symbol>` with the id `user`.
 
 You can now use the symbol with the provided component:
@@ -81,10 +81,10 @@ export default defineNuxtConfig({
   svgIconSprite: {
     sprites: {
       default: {
-        importPatterns: ['./assets/icons/**/*.svg'],
+        importPatterns: ['./app/assets/icons/**/*.svg'],
       },
       dashboard: {
-        importPatterns: ['./assets/icons-dashboard/**/*.svg'],
+        importPatterns: ['./app/assets/icons-dashboard/**/*.svg'],
       },
     },
   },
@@ -153,15 +153,15 @@ parsed SVG before it is added to the sprite.
 The module exports a few processors you can use:
 
 ```typescript
-import { removeSizes, forceCurrentColor } from 'nuxt-svg-icon-sprite/processors'
+import { removeSizes, forceCurrentColor } from 'nuxt-svg-symbol-sprite/processors'
 
 export default defineNuxtConfig({
-  modules: ['nuxt-svg-icon-sprite'],
+  modules: ['nuxt-svg-symbol-sprite'],
 
   svgIconSprite: {
     sprites: {
       default: {
-        importPatterns: ['./assets/icons/**/*.svg'],
+        importPatterns: ['./app/assets/icons/**/*.svg'],
         processSpriteSymbol: [removeSizes(), forceCurrentColor()],
       },
     },
@@ -190,15 +190,15 @@ all symbols in the sprite!
 Removes the given tags. For example, to remove all `<title>` tags from the SVG:
 
 ```typescript
-import { removeTags } from 'nuxt-svg-icon-sprite/processors'
+import { removeTags } from 'nuxt-svg-symbol-sprite/processors'
 
 export default defineNuxtConfig({
-  modules: ['nuxt-svg-icon-sprite'],
+  modules: ['nuxt-svg-symbol-sprite'],
 
   svgIconSprite: {
     sprites: {
       default: {
-        importPatterns: ['./assets/icons/**/*.svg'],
+        importPatterns: ['./app/assets/icons/**/*.svg'],
         processSpriteSymbol: [removeTags({ tags: ['title'] })],
       },
     },
@@ -211,15 +211,15 @@ export default defineNuxtConfig({
 You can also provide your own processors as inline methods:
 
 ```typescript
-import { removeSizes, forceCurrentColor } from 'nuxt-svg-icon-sprite/processors'
+import { removeSizes, forceCurrentColor } from 'nuxt-svg-symbol-sprite/processors'
 
 export default defineNuxtConfig({
-  modules: ['nuxt-svg-icon-sprite'],
+  modules: ['nuxt-svg-symbol-sprite'],
 
   svgIconSprite: {
     sprites: {
       default: {
-        importPatterns: ['./assets/icons/**/*.svg'],
+        importPatterns: ['./app/assets/icons/**/*.svg'],
         processSpriteSymbol: [
           (svg) => {
             // Removes all <title> tags.
@@ -244,7 +244,7 @@ export default defineNuxtConfig({
   svgIconSprite: {
     sprites: {
       default: {
-        importPatterns: ['./assets/icons/**/*.svg'],
+        importPatterns: ['./app/assets/icons/**/*.svg'],
 
         // Directly provide symbol SVG by path.
         // These are added after the auto imports defined in

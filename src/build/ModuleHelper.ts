@@ -96,7 +96,7 @@ export class ModuleHelper {
 
     if (!mergedOptions.sprites.default) {
       mergedOptions.sprites.default = {
-        importPatterns: ['./assets/symbols/*.svg'],
+        importPatterns: ['./app/assets/symbols/*.svg'],
       }
     }
 
@@ -120,7 +120,7 @@ export class ModuleHelper {
 
     const spriteKeys = Object.keys(mergedOptions.sprites)
     for (const key of spriteKeys) {
-      if (mergedOptions.sprites[key].importPatterns) {
+      if (mergedOptions.sprites[key]?.importPatterns) {
         mergedOptions.sprites[key].importPatterns = mergedOptions.sprites[
           key
         ].importPatterns.flatMap((pattern) => {
