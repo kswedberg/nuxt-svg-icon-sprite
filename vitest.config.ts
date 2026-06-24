@@ -1,8 +1,10 @@
+import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 import { defineVitestProject } from '@nuxt/test-utils/config'
 
 const root = fileURLToPath(new URL('.', import.meta.url))
+const moduleEntry = join(root, 'src/module')
 
 export default defineConfig({
   test: {
@@ -38,7 +40,7 @@ export default defineConfig({
           environmentOptions: {
             nuxt: {
               overrides: {
-                modules: ['nuxt-svg-symbol-sprite'],
+                modules: [moduleEntry],
               },
             },
           },
