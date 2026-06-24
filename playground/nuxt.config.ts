@@ -1,4 +1,5 @@
 import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
 import {
   forceCurrentColor,
   removeSizes,
@@ -6,7 +7,7 @@ import {
   defineProcessor,
 } from './../src/processors'
 
-const importPattern = path.resolve(__dirname, './assets/symbols') + '/**/*.svg'
+const importPattern = path.resolve(__dirname, './app/assets/symbols') + '/**/*.svg'
 
 const removeTitle = defineProcessor(() => {
   return (svg) => {
@@ -60,6 +61,15 @@ export default defineNuxtConfig({
     build: {
       minify: false,
     },
+    optimizeDeps: {
+      include: [
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+      ]
+    },
+    plugins: [
+      tailwindcss(),
+    ],
     server: {
       watch: {
         usePolling: true,
@@ -77,7 +87,7 @@ export default defineNuxtConfig({
         processSpriteSymbol: symbolProcessors,
       },
       special: {
-        importPatterns: ['./assets/symbols-special/**/*.svg'],
+        importPatterns: ['./app/assets/symbols-special/**/*.svg'],
         processSpriteSymbol: symbolProcessors,
       },
     },
@@ -86,12 +96,5 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
-  postcss: {
-    plugins: {
-      tailwindcss: {},
-      autoprefixer: {},
-    },
-  },
-
-  compatibilityDate: '2024-08-25',
+  compatibilityDate: '2025-08-25',
 })

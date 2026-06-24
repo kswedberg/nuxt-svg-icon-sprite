@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+
+nav a {
+  @apply text-blue-700 hover:text-blue-900;
+
+  &.router-link-active {
+    @apply text-gray-900;
+  }
+}

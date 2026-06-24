@@ -17,10 +17,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref } from 'vue'
 const TOTAL = 20
-
-const offset = ref(0)
 
 function getTransform(n: number) {
   const v = ((TOTAL - n - 1) / (TOTAL - 5)) % 1.75
@@ -39,22 +36,6 @@ const COLOR_CLASSES = [
 function getClass(n: number) {
   return COLOR_CLASSES[n % COLOR_CLASSES.length]
 }
-
-let raf: any = null
-
-const loop = () => {
-  offset.value = offset.value + 1
-
-  raf = window.requestAnimationFrame(loop)
-}
-
-onUnmounted(() => {
-  window.cancelAnimationFrame(raf)
-})
-
-onMounted(() => {
-  loop()
-})
 </script>
 
 <style type="postcss">
