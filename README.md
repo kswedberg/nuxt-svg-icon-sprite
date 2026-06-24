@@ -1,12 +1,11 @@
 # Nuxt SVG Symbol Sprite
 
-**_This is a TEMPORARY fork of the `nuxt-svg-icon-sprite` module_**
+**_This is a TEMPORARY fork of the `nuxt-svg-icon-sprite` module_** that updates all dependencies to be compatible with Nuxt 4 and above. The only changes in the user-facing API are the module name (**`nuxt-svg-symbol-sprite`**) and the import path (**`#nuxt-svg-symbol-sprite`**).
 
-An easy and performant way to use SVG icons in your Nuxt 3 app.
+_________
+An easy and performant way to use SVG icons in your Nuxt 4 app.
 
-Automatically creates
-[SVG `<symbol>` sprites](https://www.sitepoint.com/use-svg-image-sprites/)
-during the build and provides components and composables to use these icons.
+Automatically creates [SVG `<symbol>` sprites](https://www.sitepoint.com/use-svg-image-sprites/) during the build and provides components and composables to use these icons.
 
 - Aggregate all SVG files into one or more sprite files
 - Reduce bundle size and SSR-rendered page size
