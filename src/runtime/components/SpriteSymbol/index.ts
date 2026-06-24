@@ -5,7 +5,7 @@ import {
   runtimeOptions,
   isServer,
   type NuxtSvgSpriteSymbol,
-} from '#nuxt-svg-icon-sprite/runtime'
+} from '#nuxt-svg-symbol-sprite/runtime'
 import { getSymbolNameParts } from '../../helpers'
 
 type Props = {

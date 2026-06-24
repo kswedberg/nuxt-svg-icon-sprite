@@ -1,5 +1,5 @@
 import { defineComponent } from 'vue'
-import { symbolImportsInline } from '#nuxt-svg-icon-sprite/symbol-import'
+import { symbolImportsInline } from '#nuxt-svg-symbol-sprite/symbol-import'
 import { getSymbolNameParts } from '../../helpers'
 import { fallback, svg, type Props } from './shared'
 

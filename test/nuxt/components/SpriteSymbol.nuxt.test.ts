@@ -19,7 +19,7 @@ const runtimeMock = vi.hoisted(() => ({
   isServer: false,
 }))
 
-vi.mock('#nuxt-svg-icon-sprite/runtime', () => runtimeMock)
+vi.mock('#nuxt-svg-symbol-sprite/runtime', () => runtimeMock)
 
 describe('SpriteSymbol', () => {
   beforeEach(() => {

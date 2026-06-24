@@ -40,7 +40,7 @@ export type RuntimeOptions = {
 }
 
 /**
- * Options for the nuxt-svg-icon-sprite module.
+ * Options for the nuxt-svg-symbol-sprite module.
  */
 export type ModuleOptions = {
   /**

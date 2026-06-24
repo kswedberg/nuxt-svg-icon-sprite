@@ -161,7 +161,7 @@ describe('Sprite', () => {
     })
 
     const fileName = await sprite.getSpriteFileName()
-    expect(fileName).toBe('nuxt-svg-icon-sprite/sprite-default.abc123.svg')
+    expect(fileName).toBe('nuxt-svg-symbol-sprite/sprite-default.abc123.svg')
   })
 
   it('should get prefix based on name', () => {

@@ -9,7 +9,7 @@ const runtimeMock = vi.hoisted(() => ({
   },
 }))
 
-vi.mock('#nuxt-svg-icon-sprite/runtime', () => runtimeMock)
+vi.mock('#nuxt-svg-symbol-sprite/runtime', () => runtimeMock)
 
 // Mock symbolImports.
 const symbolImportsDynamic = vi.hoisted(() => ({
@@ -71,7 +71,7 @@ const symbolImportsInline = vi.hoisted(() => ({
   },
 }))
 
-vi.mock('#nuxt-svg-icon-sprite/symbol-import', () => ({
+vi.mock('#nuxt-svg-symbol-sprite/symbol-import', () => ({
   symbolImportsDynamic,
   symbolImportsInline,
 }))

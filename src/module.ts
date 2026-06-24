@@ -27,7 +27,7 @@ export default defineNuxtModule<ModuleOptions>({
   async setup(moduleOptions, nuxt) {
     const helper = new ModuleHelper(nuxt, import.meta.url, moduleOptions)
 
-    helper.addAlias('#nuxt-svg-icon-sprite', helper.paths.moduleBuildDir)
+    helper.addAlias('#nuxt-svg-symbol-sprite', helper.paths.moduleBuildDir)
     helper.transpile(helper.resolvers.module.resolve('runtime'))
 
     helper.addComposable('useSpriteData')
@@ -56,7 +56,7 @@ export default defineNuxtModule<ModuleOptions>({
       // In dev mode, the sprite is served by this server handler.
       addDevServerHandler({
         handler: createDevServerHandler(collector),
-        route: `/__nuxt/nuxt-svg-icon-sprite`,
+        route: `/__nuxt/nuxt-svg-symbol-sprite`,
       })
     } else {
       // For the build the sprite is generated as a dist file.
@@ -80,7 +80,7 @@ export default defineNuxtModule<ModuleOptions>({
         for (const processed of symbols) {
           addTemplate({
             filename:
-              'nuxt-svg-icon-sprite/symbols/' +
+              'nuxt-svg-symbol-sprite/symbols/' +
               sprite.getPrefix() +
               processed.symbol.id +
               '.js',
@@ -97,7 +97,7 @@ export default defineNuxtModule<ModuleOptions>({
     }
 
     addTemplate({
-      filename: 'nuxt-svg-icon-sprite/runtime.js',
+      filename: 'nuxt-svg-symbol-sprite/runtime.js',
       getContents: () => collector.getTemplate('runtime'),
     })
 
@@ -105,13 +105,13 @@ export default defineNuxtModule<ModuleOptions>({
       // In Nitro, this file is imported using this alias.
       // Since this is a virtual file, the filename must be the alias,
       // not the path!
-      filename: '#nuxt-svg-icon-sprite/runtime',
+      filename: '#nuxt-svg-symbol-sprite/runtime',
       getContents: () => collector.getTemplate('runtime'),
     })
 
     addTypeTemplate(
       {
-        filename: 'nuxt-svg-icon-sprite/runtime.d.ts',
+        filename: 'nuxt-svg-symbol-sprite/runtime.d.ts',
         write: true,
         getContents: () => collector.getTemplate('runtime-types'),
       },
@@ -122,13 +122,13 @@ export default defineNuxtModule<ModuleOptions>({
     )
 
     addTemplate({
-      filename: 'nuxt-svg-icon-sprite/symbol-import.js',
+      filename: 'nuxt-svg-symbol-sprite/symbol-import.js',
       getContents: () => collector.getTemplate('symbol-import'),
     })
 
     addTypeTemplate(
       {
-        filename: 'nuxt-svg-icon-sprite/symbol-import.d.ts',
+        filename: 'nuxt-svg-symbol-sprite/symbol-import.d.ts',
         write: true,
         getContents: () => collector.getTemplate('symbol-import-types'),
       },

@@ -1,6 +1,6 @@
 import { h } from 'vue'
-import { runtimeOptions } from '#nuxt-svg-icon-sprite/runtime'
-import type { NuxtSvgSpriteSymbol } from '#nuxt-svg-icon-sprite/runtime'
+import { runtimeOptions } from '#nuxt-svg-symbol-sprite/runtime'
+import type { NuxtSvgSpriteSymbol } from '#nuxt-svg-symbol-sprite/runtime'
 
 export type Props = {
   /**

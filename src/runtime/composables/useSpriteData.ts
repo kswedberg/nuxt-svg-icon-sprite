@@ -1,5 +1,5 @@
-import type { NuxtSvgSpriteSymbol } from '#nuxt-svg-icon-sprite/runtime'
-import { spritePaths, allSymbolNames } from '#nuxt-svg-icon-sprite/runtime'
+import type { NuxtSvgSpriteSymbol } from '#nuxt-svg-symbol-sprite/runtime'
+import { spritePaths, allSymbolNames } from '#nuxt-svg-symbol-sprite/runtime'
 
 type SpriteData = {
   /**

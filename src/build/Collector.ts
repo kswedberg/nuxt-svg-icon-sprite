@@ -54,7 +54,7 @@ export class Collector {
       if (this.helper.isDev) {
         const { hash } = await sprite.getSprite()
         fileNames[sprite.name] =
-          `/__nuxt/nuxt-svg-icon-sprite/sprite.${sprite.name}.${hash}.svg`
+          `/__nuxt/nuxt-svg-symbol-sprite/sprite.${sprite.name}.${hash}.svg`
       } else {
         fileNames[sprite.name] =
           this.helper.paths.buildAssetsDir + (await sprite.getSpriteFileName())
@@ -90,7 +90,7 @@ export const allSymbolNames = Object.freeze(${JSON.stringify(allSymbols, null, 2
     this.setTemplate(
       'runtime-types',
       `
-declare module '#nuxt-svg-icon-sprite/runtime' {
+declare module '#nuxt-svg-symbol-sprite/runtime' {
   /**
    * Keys of all generated SVG sprite symbols.
    */
@@ -144,7 +144,7 @@ declare module '#nuxt-svg-icon-sprite/runtime' {
 
         // This is only needed in the build.
         if (!this.helper.isDev) {
-          const importMethodDynamic = `() => import('#build/nuxt-svg-icon-sprite/symbols/${id}').then(v => v.default)`
+          const importMethodDynamic = `() => import('#build/nuxt-svg-symbol-sprite/symbols/${id}').then(v => v.default)`
           importsDynamic.push(`${property}: ${importMethodDynamic}`)
         }
       }
@@ -169,7 +169,7 @@ export const symbolImportsDynamic = {
     this.setTemplate(
       'symbol-import-types',
       `
-declare module '#nuxt-svg-icon-sprite/symbol-import' {
+declare module '#nuxt-svg-symbol-sprite/symbol-import' {
   import type { NuxtSvgSpriteSymbol } from './runtime'
 
   type SymbolImport = {

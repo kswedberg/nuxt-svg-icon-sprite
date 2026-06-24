@@ -1,6 +1,6 @@
 import { defineComponent, h } from 'vue'
 import { getSymbolNameParts } from '../../helpers'
-import { symbolImportsDynamic } from '#nuxt-svg-icon-sprite/symbol-import'
+import { symbolImportsDynamic } from '#nuxt-svg-symbol-sprite/symbol-import'
 import { fallback, svg, type Props } from './shared'
 
 const SymbolInline = defineComponent({
