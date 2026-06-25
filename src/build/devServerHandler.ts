@@ -1,10 +1,15 @@
-import {
-  defineEventHandler,
-  defaultContentType,
-  setResponseHeader,
-  getRequestURL,
-} from 'h3'
+import { defineEventHandler } from 'h3'
+import type { H3Event } from 'h3'
 import type { Collector } from './Collector'
+
+/**
+ * @param {H3Event} event
+ */
+function getRequestPath(event: H3Event) {
+  const raw =
+    event.node?.req?.originalUrl || event.path || event.node?.req?.url || '/'
+  return raw.split('?')[0]
+}
 
 /**
  * Serve sprites during dev mode.
@@ -15,19 +20,19 @@ import type { Collector } from './Collector'
  */
 export function createDevServerHandler(collector: Collector) {
   return defineEventHandler(async (event) => {
-    defaultContentType(event, 'image/svg+xml')
-    // Workaround for a Chrome bug.
-    if (typeof setResponseHeader === 'function') {
-      setResponseHeader(event, 'Cache-Control', 'max-age=100000')
+    const res = event.node?.res
+    if (
+      res?.setHeader &&
+      res.statusCode !== 304 &&
+      !res.getHeader('content-type')
+    ) {
+      res.setHeader('content-type', 'image/svg+xml')
     }
-    // @ts-ignore Preparing for H3 2.x
-    else if (event?.res?.headers?.set) {
-      // @ts-ignore
-      event.res.headers.set('Cache-Control', 'max-age=100000')
+    if (res?.setHeader) {
+      res.setHeader('Cache-Control', 'max-age=100000')
     }
 
-    const url = getRequestURL(event)
-    const fileName = url.pathname.split('/').slice(-1)?.[0] ?? ''
+    const fileName = getRequestPath(event).split('/').slice(-1)?.[0] ?? ''
     const [_prefix, spriteName, _hash, _extension] = fileName.split('.') ?? []
 
     const sprite = collector.sprites.find((v) => v.name === spriteName)
