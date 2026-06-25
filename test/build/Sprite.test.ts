@@ -2,11 +2,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { hash } from 'ohash'
 import { HTMLElement } from 'node-html-parser'
 import * as nuxtKit from '@nuxt/kit'
-import { Sprite } from '~~/src/build/Sprite'
+import { Sprite } from '../../src/build/Sprite.ts'
 import { promises as fs } from 'node:fs'
-import type { SpriteSymbol } from '~~/src/build/SpriteSymbol'
-import { logger } from '~~/src/build/utils'
-import type { ModuleHelper } from '~~/src/build/ModuleHelper'
+import type { SpriteSymbol } from '../../src/build/SpriteSymbol'
+import { logger } from '../../src/build/utils'
+import type { ModuleHelper } from '../../src/build/ModuleHelper'
 
 type MockSymbol = {
   id: string
