@@ -5,10 +5,11 @@ import type { Collector } from './Collector'
 /**
  * @param {H3Event} event
  */
-function getRequestPath(event: H3Event) {
+function getRequestPath(event: H3Event): string {
   const raw =
     event.node?.req?.originalUrl || event.path || event.node?.req?.url || '/'
-  return raw.split('?')[0]
+
+  return raw.split('?')[0] ?? raw
 }
 
 /**
@@ -32,7 +33,7 @@ export function createDevServerHandler(collector: Collector) {
       res.setHeader('Cache-Control', 'max-age=100000')
     }
 
-    const fileName = getRequestPath(event).split('/').slice(-1)?.[0] ?? ''
+    const fileName = getRequestPath(event).split('/').pop() ?? ''
     const [_prefix, spriteName, _hash, _extension] = fileName.split('.') ?? []
 
     const sprite = collector.sprites.find((v) => v.name === spriteName)
