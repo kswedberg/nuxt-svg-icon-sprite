@@ -7,7 +7,8 @@ import {
   defineProcessor,
 } from './../src/processors'
 
-const importPattern = path.resolve(__dirname, './app/assets/symbols') + '/**/*.svg'
+const importPattern =
+  path.resolve(__dirname, './app/assets/symbols') + '/**/*.svg'
 
 const removeTitle = defineProcessor(() => {
   return (svg) => {
@@ -62,14 +63,9 @@ export default defineNuxtConfig({
       minify: false,
     },
     optimizeDeps: {
-      include: [
-        '@vue/devtools-core',
-        '@vue/devtools-kit',
-      ]
+      include: ['@vue/devtools-core', '@vue/devtools-kit'],
     },
-    plugins: [
-      tailwindcss(),
-    ],
+    plugins: [tailwindcss()],
     server: {
       watch: {
         usePolling: true,

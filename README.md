@@ -1,11 +1,17 @@
 # Nuxt SVG Symbol Sprite
 
-**_This is a TEMPORARY fork of the `nuxt-svg-icon-sprite` module_** that updates all dependencies to be compatible with Nuxt 4 and above. The only changes in the user-facing API are the module name (**`nuxt-svg-symbol-sprite`**) and the import path (**`#nuxt-svg-symbol-sprite`**).
+**_This is a TEMPORARY fork of the `nuxt-svg-icon-sprite` module_** that updates
+all dependencies to be compatible with Nuxt 4 and above. The only changes in the
+user-facing API are the module name (**`nuxt-svg-symbol-sprite`**) and the
+import path (**`#nuxt-svg-symbol-sprite`**).
 
-_________
+---
+
 An easy and performant way to use SVG icons in your Nuxt 4 app.
 
-Automatically creates [SVG `<symbol>` sprites](https://www.sitepoint.com/use-svg-image-sprites/) during the build and provides components and composables to use these icons.
+Automatically creates
+[SVG `<symbol>` sprites](https://www.sitepoint.com/use-svg-image-sprites/)
+during the build and provides components and composables to use these icons.
 
 - Aggregate all SVG files into one or more sprite files
 - Reduce bundle size and SSR-rendered page size
@@ -42,8 +48,8 @@ Place the icons in the folder defined in `nuxt.config.ts`. By default, it's
 
 **NOTE: Each symbol in a sprite must have a unique name!**
 
-So, if you have a file in `./app/assets/icons/user.svg`, the sprite will contain a
-`<symbol>` with the id `user`.
+So, if you have a file in `./app/assets/icons/user.svg`, the sprite will contain
+a `<symbol>` with the id `user`.
 
 You can now use the symbol with the provided component:
 
@@ -152,7 +158,10 @@ parsed SVG before it is added to the sprite.
 The module exports a few processors you can use:
 
 ```typescript
-import { removeSizes, forceCurrentColor } from 'nuxt-svg-symbol-sprite/processors'
+import {
+  removeSizes,
+  forceCurrentColor,
+} from 'nuxt-svg-symbol-sprite/processors'
 
 export default defineNuxtConfig({
   modules: ['nuxt-svg-symbol-sprite'],
@@ -210,7 +219,10 @@ export default defineNuxtConfig({
 You can also provide your own processors as inline methods:
 
 ```typescript
-import { removeSizes, forceCurrentColor } from 'nuxt-svg-symbol-sprite/processors'
+import {
+  removeSizes,
+  forceCurrentColor,
+} from 'nuxt-svg-symbol-sprite/processors'
 
 export default defineNuxtConfig({
   modules: ['nuxt-svg-symbol-sprite'],
