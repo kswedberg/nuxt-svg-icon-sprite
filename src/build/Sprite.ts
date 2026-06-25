@@ -18,7 +18,7 @@ export class Sprite {
   config: SpriteConfig
 
   /**
-   * The symbols beloning to the sprite.
+   * The symbols belonging to the sprite.
    */
   private symbols: SpriteSymbol[] = []
 
@@ -117,8 +117,8 @@ export class Sprite {
     // User-provided symbols.
     if (this.config.symbolFiles) {
       const customSymbols = await Promise.all(
-        Object.keys(this.config.symbolFiles).map((id) =>
-          resolvePath(this.config.symbolFiles![id]),
+        Object.values(this.config.symbolFiles).map((filePath) =>
+          resolvePath(filePath),
         ),
       )
       customSymbols.forEach((filePath) =>
