@@ -17,7 +17,14 @@ export function createDevServerHandler(collector: Collector) {
   return defineEventHandler(async (event) => {
     defaultContentType(event, 'image/svg+xml')
     // Workaround for a Chrome bug.
-    setResponseHeader(event, 'Cache-Control', 'max-age=100000')
+    if (typeof setResponseHeader === 'function') {
+      setResponseHeader(event, 'Cache-Control', 'max-age=100000')
+    }
+    // @ts-ignore Preparing for H3 2.x
+    else if (event?.res?.headers?.set) {
+      // @ts-ignore
+      event.res.headers.set('Cache-Control', 'max-age=100000')
+    }
 
     const url = getRequestURL(event)
     const fileName = url.pathname.split('/').slice(-1)?.[0] ?? ''
